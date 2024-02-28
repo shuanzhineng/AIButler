@@ -1,13 +1,10 @@
-from typing import Annotated, Type
-
 from fastapi import APIRouter, Depends
-from apps.system.models.db import Menu, MenuAPIPermission, Role, Dept
+from apps.system.models.db import Menu, MenuAPIPermission
 from apps.system.models import request, response
 from apps.account.depends import NeedAuthorization
 from common.utils import get_instance, construct_tree
-from common.enums import MenuGenreEnum, DataScopeEnum
+from common.enums import MenuGenreEnum
 from fastapi_pagination import Page, Params
-from loguru import logger
 from http import HTTPStatus
 from tortoise.transactions import atomic
 from fastapi_pagination.ext.tortoise import paginate
@@ -21,9 +18,7 @@ router = APIRouter(
 
 # TODO 增加修改人和归属部门
 @router.get("", summary="菜单列表", response_model=Page[response.QueryMenuOut])
-async def menus(
-    user: NeedAuthorization, params=Depends(Params), parent_id: int | None = None
-):
+async def menus(user: NeedAuthorization, params=Depends(Params), parent_id: int | None = None):
     """index"""
     query_sets = Menu.filter(parent=parent_id, genre__in=[MenuGenreEnum.DIRECTORY, MenuGenreEnum.PAGE])
     output = await paginate(query_sets)
@@ -34,10 +29,8 @@ async def menus(
     return output
 
 
-@router.get("/full-tree", summary="菜单树")
-async def menu_tree(
-    user: NeedAuthorization, params=Depends(Params), response_model=list[response.QueryMenuTreeOut]
-):
+@router.get("/full-tree", summary="菜单树", response_model=list[response.QueryMenuTreeOut])
+async def menu_tree(user: NeedAuthorization, params=Depends(Params)):
     """完整菜单树"""
     query_sets = await Menu.all().prefetch_related("parent")
     tree = construct_tree(query_sets)
@@ -49,9 +42,7 @@ async def menu_tree(
 
 
 @router.get("/{pk}/buttons", summary="菜单按钮", response_model=Page[response.QueryButtonOut])
-async def buttons(
-    pk: int, user: NeedAuthorization, params=Depends(Params)
-):
+async def buttons(pk: int, user: NeedAuthorization, params=Depends(Params)):
     """菜单下的按钮"""
     query_sets = Menu.filter(parent=pk, genre=MenuGenreEnum.BUTTON)
     output = await paginate(query_sets)
@@ -62,9 +53,7 @@ async def buttons(
 
 
 @router.put("/buttons/{pk}", summary="修改按钮", response_model=response.QueryButtonOut)
-async def put_button(
-    pk: int, items: request.PatchButtonIn, user: NeedAuthorization, params=Depends(Params)
-):
+async def put_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorization, params=Depends(Params)):
     """修改按钮"""
     instance = await get_instance(Menu, pk)
     items = items.model_dump()
@@ -92,9 +81,7 @@ async def put_button(
 
 
 @router.delete("/buttons/{pk}", summary="删除按钮")
-async def delete_button(
-    pk: int, items: request.PatchButtonIn, user: NeedAuthorization, params=Depends(Params)
-):
+async def delete_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorization, params=Depends(Params)):
     """删除按钮"""
     instance = await get_instance(Menu, pk)
 
@@ -172,4 +159,3 @@ async def delete_menu(pk: int, user: NeedAuthorization):
     instance = await get_instance(Menu, pk)
     await instance.delete()
     return
-

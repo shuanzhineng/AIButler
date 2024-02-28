@@ -1,13 +1,9 @@
-from typing import Annotated, Type
-
-from fastapi import APIRouter, Depends
-from apps.system.models.db import Menu, MenuAPIPermission, Role, Dept
+from fastapi import APIRouter
+from apps.system.models.db import Menu, Role, Dept
 from apps.system.models import request, response
 from apps.account.depends import NeedAuthorization
-from common.utils import get_instance, construct_tree
-from common.enums import MenuGenreEnum, DataScopeEnum
-from fastapi_pagination import Page, Params
-from loguru import logger
+from common.utils import get_instance
+from fastapi_pagination import Page
 from http import HTTPStatus
 from tortoise.transactions import atomic
 from fastapi_pagination.ext.tortoise import paginate
@@ -25,14 +21,14 @@ async def roles(user: NeedAuthorization):
     return await paginate(Role.all())
 
 
-@router.get("/{pk}", summary="角色详情",response_model=response.RoleOut)
+@router.get("/{pk}", summary="角色详情", response_model=response.RoleOut)
 async def retrieve_role(pk: int, user: NeedAuthorization):
     """角色详情"""
     instance = await get_instance(Role, pk)
     return instance
 
 
-@router.post("", summary="创建角色",  response_model=response.RoleOut, status_code=HTTPStatus.CREATED)
+@router.post("", summary="创建角色", response_model=response.RoleOut, status_code=HTTPStatus.CREATED)
 async def create_role(user: NeedAuthorization, items: request.CreateRoleIn):
     """创建角色"""
     role = await Role.create(**items.model_dump(), creator=user)

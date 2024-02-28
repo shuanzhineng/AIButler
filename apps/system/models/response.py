@@ -1,18 +1,13 @@
 from common.base_pydantic import CustomBaseModel
-from pydantic import Field, HttpUrl, field_validator
+from pydantic import field_validator
 from typing import Literal
 from typing_extensions import TypedDict
 from apps.system.models.db import Menu, Role, Dept
 from common.enums import MenuGenreEnum
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
-
-_MenuNoParentOut = pydantic_model_creator(
-    Menu,
-    name="_MenuNoParentOut",
-    allow_cycles=True,
-    exclude=("parent", )
-)
+# ---------------------菜单model------------------------
+_MenuNoParentOut = pydantic_model_creator(Menu, name="_MenuNoParentOut", allow_cycles=True, exclude=("parent",))
 
 
 _ButtonNoParentOut = pydantic_model_creator(
@@ -24,40 +19,16 @@ _ButtonNoParentOut = pydantic_model_creator(
         "sort",
         "disabled",
     ),
-
 )
 
 
-_DeptNoParentOut = pydantic_model_creator(
-    Dept,
-    name="_DeptNoParentOut",
-    allow_cycles=True,
-    exclude=("parent", )
-)
-
-_RoleOut = pydantic_model_creator(
-    Role,
-    name="_RoleOut",
-
-)
-
-_DeptOut = pydantic_model_creator(
-    Dept,
-    name="_DeptOut",
-
-)
-
-
-class MenuNoParentOut(_MenuNoParentOut, CustomBaseModel):
-    pass
-
-
-class DeptNoParentOut(_DeptNoParentOut, CustomBaseModel):
+class MenuNoParentOut(_MenuNoParentOut, CustomBaseModel):  # type: ignore
     pass
 
 
 class MenuDetailOut(MenuNoParentOut):
     """创建菜单响应体参数"""
+
     parent: dict | None
 
     @field_validator(
@@ -65,24 +36,24 @@ class MenuDetailOut(MenuNoParentOut):
     )
     @classmethod
     def change_genre(cls, v):
-        return {
-            "name": MenuGenreEnum.get_display(v),
-            "value": v
-        }
+        return {"name": MenuGenreEnum.get_display(v), "value": v}
 
 
 class QueryMenuOut(MenuNoParentOut):
     """查询菜单响应体参数"""
+
     child: bool = False
 
 
 class QueryMenuTreeOut(MenuNoParentOut):
     """查询菜单树响应体参数"""
+
     children: list["QueryMenuTreeOut"] = []
 
 
-class QueryButtonOut(_ButtonNoParentOut, CustomBaseModel):
+class QueryButtonOut(_ButtonNoParentOut, CustomBaseModel):  # type: ignore
     """查询菜单响应体参数"""
+
     class API(TypedDict):
         method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"]
         api: str
@@ -90,9 +61,38 @@ class QueryButtonOut(_ButtonNoParentOut, CustomBaseModel):
     apis: list[API] = []
 
 
-class RoleOut(_RoleOut, CustomBaseModel):
+# ---------------------角色model------------------------
+
+_RoleOut = pydantic_model_creator(
+    Role,
+    name="_RoleOut",
+)
+
+
+class RoleOut(_RoleOut, CustomBaseModel):  # type: ignore
     pass
 
 
-class DeptDetailOut(_DeptOut, CustomBaseModel):
+# ---------------------部门model------------------------
+
+_DeptNoParentOut = pydantic_model_creator(Dept, name="_DeptNoParentOut", allow_cycles=True, exclude=("parent",))
+
+
+class DeptNoParentOut(_DeptNoParentOut, CustomBaseModel):  # type: ignore
+    pass
+
+
+class QueryDeptOut(DeptNoParentOut):
+    """查询菜单响应体参数"""
+
+    child: bool = False
+
+
+class DeptDetailOut(DeptNoParentOut, CustomBaseModel):
     parent: dict | None
+
+
+class QueryDeptTreeOut(DeptNoParentOut):
+    """查询菜单树响应体参数"""
+
+    children: list["QueryDeptTreeOut"] = []
