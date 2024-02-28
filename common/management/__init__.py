@@ -1,6 +1,6 @@
 from tortoise import Tortoise
 
-from apps.account.models.db import User
+from apps.system.models.db import User
 from apps.system.models.db import Menu, MenuAPIPermission
 from common.const_menu import INIT_MENU
 from conf.settings import AERICH_TORTOISE_ORM_CONFIG
@@ -33,4 +33,3 @@ async def _create_menus(menus, parent=None):
 async def create_menus() -> None:
     await init_tortoise()
     await _create_menus(INIT_MENU)
-

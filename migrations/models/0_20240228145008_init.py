@@ -13,21 +13,23 @@ CREATE TABLE IF NOT EXISTS `user` (
     `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
     `create_time` DATETIME(6) NOT NULL  COMMENT '创建时间' DEFAULT CURRENT_TIMESTAMP(6),
     `update_time` DATETIME(6) NOT NULL  COMMENT '更新时间' DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    `modifier_id` VARCHAR(255)   COMMENT '修改人id',
-    `dept_belong_id` VARCHAR(255)   COMMENT '数据归属部门id',
+    `modifier_id` BIGINT   COMMENT '修改人id',
+    `dept_belong_id` BIGINT   COMMENT '数据归属部门id',
     `name` VARCHAR(255) NOT NULL  COMMENT '用户姓名' DEFAULT '',
     `username` VARCHAR(255) NOT NULL  COMMENT '用户名',
     `password` VARCHAR(255) NOT NULL  COMMENT '密码hash值',
     `phone` VARCHAR(255) NOT NULL  COMMENT '手机号' DEFAULT '',
+    `email` VARCHAR(255) NOT NULL  COMMENT '邮箱' DEFAULT '',
     `disabled` BOOL NOT NULL  COMMENT '是否禁用' DEFAULT 0,
+    `description` VARCHAR(255) NOT NULL  COMMENT '用户描述' DEFAULT '',
     `creator_id` BIGINT
 ) CHARACTER SET utf8mb4 COMMENT='用户表';
 CREATE TABLE IF NOT EXISTS `dept` (
     `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
     `create_time` DATETIME(6) NOT NULL  COMMENT '创建时间' DEFAULT CURRENT_TIMESTAMP(6),
     `update_time` DATETIME(6) NOT NULL  COMMENT '更新时间' DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    `modifier_id` VARCHAR(255)   COMMENT '修改人id',
-    `dept_belong_id` VARCHAR(255)   COMMENT '数据归属部门id',
+    `modifier_id` BIGINT   COMMENT '修改人id',
+    `dept_belong_id` BIGINT   COMMENT '数据归属部门id',
     `name` VARCHAR(255) NOT NULL  COMMENT '部门名称',
     `key` VARCHAR(255) NOT NULL  COMMENT '关联字符' DEFAULT '',
     `owner` VARCHAR(255) NOT NULL  COMMENT '负责人',
@@ -35,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `dept` (
     `email` VARCHAR(255) NOT NULL  COMMENT '邮箱',
     `disabled` BOOL NOT NULL  COMMENT '是否禁用' DEFAULT 0,
     `sort` INT NOT NULL  COMMENT '排序号' DEFAULT 1,
+    `description` VARCHAR(255) NOT NULL  COMMENT '角色描述',
     `creator_id` BIGINT,
     `parent_id` BIGINT
 ) CHARACTER SET utf8mb4 COMMENT='部门';
@@ -42,8 +45,8 @@ CREATE TABLE IF NOT EXISTS `menu` (
     `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
     `create_time` DATETIME(6) NOT NULL  COMMENT '创建时间' DEFAULT CURRENT_TIMESTAMP(6),
     `update_time` DATETIME(6) NOT NULL  COMMENT '更新时间' DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    `modifier_id` VARCHAR(255)   COMMENT '修改人id',
-    `dept_belong_id` VARCHAR(255)   COMMENT '数据归属部门id',
+    `modifier_id` BIGINT   COMMENT '修改人id',
+    `dept_belong_id` BIGINT   COMMENT '数据归属部门id',
     `name` VARCHAR(255) NOT NULL  COMMENT '菜单名称',
     `icon` VARCHAR(255) NOT NULL  COMMENT '图标代码' DEFAULT '',
     `sort` INT NOT NULL  COMMENT '排序号' DEFAULT 1,
@@ -59,8 +62,8 @@ CREATE TABLE IF NOT EXISTS `menu_api_permission` (
     `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
     `create_time` DATETIME(6) NOT NULL  COMMENT '创建时间' DEFAULT CURRENT_TIMESTAMP(6),
     `update_time` DATETIME(6) NOT NULL  COMMENT '更新时间' DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    `modifier_id` VARCHAR(255)   COMMENT '修改人id',
-    `dept_belong_id` VARCHAR(255)   COMMENT '数据归属部门id',
+    `modifier_id` BIGINT   COMMENT '修改人id',
+    `dept_belong_id` BIGINT   COMMENT '数据归属部门id',
     `api` VARCHAR(255) NOT NULL  COMMENT '接口地址' DEFAULT '',
     `method` VARCHAR(255) NOT NULL  COMMENT '接口请求方法',
     `creator_id` BIGINT,
@@ -70,8 +73,8 @@ CREATE TABLE IF NOT EXISTS `role` (
     `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
     `create_time` DATETIME(6) NOT NULL  COMMENT '创建时间' DEFAULT CURRENT_TIMESTAMP(6),
     `update_time` DATETIME(6) NOT NULL  COMMENT '更新时间' DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    `modifier_id` VARCHAR(255)   COMMENT '修改人id',
-    `dept_belong_id` VARCHAR(255)   COMMENT '数据归属部门id',
+    `modifier_id` BIGINT   COMMENT '修改人id',
+    `dept_belong_id` BIGINT   COMMENT '数据归属部门id',
     `name` VARCHAR(255) NOT NULL  COMMENT '角色名称',
     `key` VARCHAR(255) NOT NULL  COMMENT '权限字符' DEFAULT '',
     `disabled` BOOL NOT NULL  COMMENT '是否禁用' DEFAULT 0,
@@ -80,24 +83,22 @@ CREATE TABLE IF NOT EXISTS `role` (
     `data_range` SMALLINT NOT NULL  COMMENT '数据范围' DEFAULT 0,
     `creator_id` BIGINT
 ) CHARACTER SET utf8mb4 COMMENT='角色';
-CREATE TABLE IF NOT EXISTS `role_menu_permission` (
-    `id` BIGINT NOT NULL PRIMARY KEY AUTO_INCREMENT COMMENT '主键id',
-    `create_time` DATETIME(6) NOT NULL  COMMENT '创建时间' DEFAULT CURRENT_TIMESTAMP(6),
-    `update_time` DATETIME(6) NOT NULL  COMMENT '更新时间' DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
-    `modifier_id` VARCHAR(255)   COMMENT '修改人id',
-    `dept_belong_id` VARCHAR(255)   COMMENT '数据归属部门id',
-    `creator_id` BIGINT,
-    `menu_id` BIGINT,
-    `role_id` BIGINT
-) CHARACTER SET utf8mb4 COMMENT='角色菜单权限';
-CREATE TABLE IF NOT EXISTS `role_dept` (
-    `role_id` BIGINT NOT NULL,
+CREATE TABLE IF NOT EXISTS `user_dept` (
+    `user_id` BIGINT NOT NULL,
     `dept_id` BIGINT NOT NULL
-) CHARACTER SET utf8mb4 COMMENT='自定义数据权限勾选的部门';
+) CHARACTER SET utf8mb4 COMMENT='部门';
+CREATE TABLE IF NOT EXISTS `user_role` (
+    `user_id` BIGINT NOT NULL,
+    `role_id` BIGINT NOT NULL
+) CHARACTER SET utf8mb4 COMMENT='角色';
 CREATE TABLE IF NOT EXISTS `role_menu` (
     `role_id` BIGINT NOT NULL,
     `menu_id` BIGINT NOT NULL
-) CHARACTER SET utf8mb4 COMMENT='具备权限的菜单';"""
+) CHARACTER SET utf8mb4 COMMENT='具备权限的菜单';
+CREATE TABLE IF NOT EXISTS `role_dept` (
+    `role_id` BIGINT NOT NULL,
+    `dept_id` BIGINT NOT NULL
+) CHARACTER SET utf8mb4 COMMENT='自定义数据权限勾选的部门';"""
 
 
 async def downgrade(db: BaseDBAsyncClient) -> str:

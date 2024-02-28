@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from loguru import logger
 from tortoise import Tortoise, connections
 from common.logger import init_logging
+from common.db_signal import registration_db_signal
 from conf.settings import AERICH_TORTOISE_ORM_CONFIG, settings
 
 from typing_extensions import TypedDict
@@ -35,6 +36,7 @@ async def lifespan(_):
     if settings.DB_URL:
         # 初始化tortoise-orm
         await Tortoise.init(config=AERICH_TORTOISE_ORM_CONFIG)
+        registration_db_signal()
     yield
     # shutdown
     logger.info("项目终止信号接收成功!")

@@ -1,24 +1,32 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from apps.system.models.db import Menu, Role, Dept
 from apps.system.models import request, response
 from apps.account.depends import NeedAuthorization
 from common.utils import get_instance
-from fastapi_pagination import Page
+from fastapi_pagination import Page, Params
 from http import HTTPStatus
 from tortoise.transactions import atomic
 from fastapi_pagination.ext.tortoise import paginate
+from common.custom_route import CustomRoute
+from tortoise.expressions import Q
+
 
 router = APIRouter(
-    prefix="/roles",
-    tags=["角色管理"],
-    responses={404: {"description": "Not found"}},
+    prefix="/roles", tags=["角色管理"], responses={404: {"description": "Not found"}}, route_class=CustomRoute
 )
 
 
 @router.get("", summary="角色列表", response_model=Page[response.RoleOut])
-async def roles(user: NeedAuthorization):
+async def roles(user: NeedAuthorization, keyword: str = "", disabled: bool | None = None, params=Depends(Params)):
     """角色列表"""
-    return await paginate(Role.all())
+    query_sets = Role.all()
+    if keyword:
+        query_sets = query_sets.filter(
+            Q(name__icontains=keyword) | Q(key__icontains=keyword) | Q(description__icontains=keyword)
+        )
+    if disabled is not None:
+        query_sets = query_sets.filter(disabled=disabled)
+    return await paginate(query_sets, params=params)
 
 
 @router.get("/{pk}", summary="角色详情", response_model=response.RoleOut)
@@ -59,10 +67,10 @@ async def patch_role_permission(pk: int, user: NeedAuthorization, items: request
         menu_objs = await Menu.filter(id__in=menu_ids)
         dept_objs = await Dept.filter(id__in=dept_ids)
 
-        await instance.menu.clear()
-        await instance.dept.clear()
-        await instance.menu.add(menu_objs)
-        await instance.dept.add(dept_objs)
+        await instance.menus.clear()
+        await instance.depts.clear()
+        await instance.menus.add(*menu_objs)
+        await instance.depts.add(*dept_objs)
 
     await _patch()
     return

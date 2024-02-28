@@ -8,11 +8,10 @@ from common.authentication import (
     create_token,
     refresh_token_to_access_token,
 )
+from common.custom_route import CustomRoute
 
 router = APIRouter(
-    prefix="/account",
-    tags=["认证信息"],
-    responses={404: {"description": "Not found"}},
+    prefix="/account", tags=["认证信息"], responses={404: {"description": "Not found"}}, route_class=CustomRoute
 )
 
 
@@ -26,9 +25,7 @@ async def get_access_token(
     return output
 
 
-@router.post(
-    "/oauth2/refresh_token", response_model=response.Token, summary="刷新访问token"
-)
+@router.post("/oauth2/refresh_token", response_model=response.Token, summary="刷新访问token")
 async def _refresh_token(refresh_token: str) -> dict[str, str]:
     """刷新token"""
     return refresh_token_to_access_token(refresh_token)

@@ -64,8 +64,40 @@ class CreateDeptIn(CustomBaseModel):
     key: str = Field(min_length=0, max_length=30)
     owner: str = Field(min_length=1, max_length=30)
     phone: str = Field(min_length=11, max_length=11, pattern=r"^1\d{10}$")
-    email: str = Field(min_length=6, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+")
+    email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])
     disabled: bool = False
     sort: int = Field(ge=0)
     description: str = Field(min_length=0, max_length=200)
     parent_id: int | None = None
+
+
+class PutUserIn(CustomBaseModel):
+    """创建用户请求体参数"""
+
+    name: str = Field(min_length=0, max_length=30)
+    username: str = Field(min_length=5, max_length=30)
+    phone: str = Field(min_length=11, max_length=11, pattern=r"^1\d{10}$")
+    email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])
+    disabled: bool = False
+    description: str = Field(min_length=0, max_length=200)
+    role_ids: list[int]
+    dept_ids: list[int]
+
+
+class CreateUserIn(PutUserIn):
+    """创建用户请求体参数"""
+
+    password: str = Field(min_length=8, max_length=30)
+
+
+class ChangePassword(CustomBaseModel):
+    password: str = Field(min_length=8, max_length=30)
+    password2: str = Field(min_length=8, max_length=30)
+
+    @field_validator("password")
+    @classmethod
+    def validate_data_range(cls, v, values):
+        password2 = values["password2"]
+        if v != password2:
+            raise ValueError("两次输入的密码不一致!")
+        return v

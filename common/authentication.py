@@ -11,7 +11,7 @@ from fastapi.security.utils import get_authorization_scheme_param
 from jose import JWTError, jwt
 from tortoise.exceptions import DoesNotExist
 
-from apps.account.models.db import User
+from apps.system.models.db import User
 from common.exceptions import JWTTokenError
 from common.utils import get_current_time
 from conf.settings import settings
@@ -75,9 +75,7 @@ def create_token(
     if access_token_expires_delta:
         access_token_expire = current_time + access_token_expires_delta
     else:
-        access_token_expire = current_time + timedelta(
-            minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-        )
+        access_token_expire = current_time + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     # 设置访问token过期时间
     to_encode.update({"exp": access_token_expire})
     access_token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -85,9 +83,7 @@ def create_token(
     if refresh_token_expires_delta:
         refresh_token_expire = current_time + refresh_token_expires_delta
     else:
-        refresh_token_expire = current_time + timedelta(
-            minutes=REFRESH_TOKEN_EXPIRE_MINUTES
-        )
+        refresh_token_expire = current_time + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     # 设置刷新token过期时间
     to_encode.update({"exp": refresh_token_expire})
     to_encode.update({"grant_type": "refresh_token"})
@@ -110,9 +106,7 @@ def refresh_token_to_access_token(refresh_token: str) -> dict[str, Any]:
         if grant_type != "refresh_token":
             raise JWTTokenError.InvalidRefreshTokenError
         else:
-            expires_in = payload["exp"] = current_time + timedelta(
-                minutes=ACCESS_TOKEN_EXPIRE_MINUTES
-            )
+            expires_in = payload["exp"] = current_time + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
             access_token = jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)
             return {"access_token": access_token, "expires_in": expires_in}
     except JWTError:
@@ -161,6 +155,3 @@ async def selectable_access_token(
     elif isinstance(user, AUTH_USER_MODEL) and user.disabled:
         raise JWTTokenError.InvalidUserError
     return user
-
-
-

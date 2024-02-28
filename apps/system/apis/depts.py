@@ -6,16 +6,16 @@ from common.utils import get_instance, construct_tree
 from fastapi_pagination import Page, Params
 from http import HTTPStatus
 from fastapi_pagination.ext.tortoise import paginate
+from common.custom_route import CustomRoute
+from tortoise.expressions import Q
 
 router = APIRouter(
-    prefix="/depts",
-    tags=["部门管理"],
-    responses={404: {"description": "Not found"}},
+    prefix="/depts", tags=["部门管理"], responses={404: {"description": "Not found"}}, route_class=CustomRoute
 )
 
 
 @router.get("", summary="部门列表", response_model=Page[response.QueryDeptOut])
-async def depts(user: NeedAuthorization, parent_id: int | None = None):
+async def depts(user: NeedAuthorization, parent_id: int | None = None, params=Depends(Params)):
     """部门列表"""
     query_sets = Dept.filter(parent=parent_id)
     output = await paginate(query_sets)
@@ -26,8 +26,30 @@ async def depts(user: NeedAuthorization, parent_id: int | None = None):
     return output
 
 
+@router.get("/unfold", summary="平铺部门列表", response_model=Page[response.DeptNoParentOut])
+async def unfold_depts(
+    user: NeedAuthorization, keyword: str = "", disabled: bool | None = None, params=Depends(Params)
+):
+    """部门列表"""
+    query_sets = Dept.all()
+    if keyword:
+        query_sets = query_sets.filter(
+            Q(name__icontains=keyword)
+            | Q(key__icontains=keyword)
+            | Q(owner__icontains=keyword)
+            | Q(phone__icontains=keyword)
+            | Q(email__icontains=keyword)
+            | Q(description__icontains=keyword)
+        )
+    if disabled is not None:
+        query_sets = query_sets.filter(disabled=disabled)
+    output = await paginate(query_sets, params=params)
+    # 在分页结果中修改child
+    return output
+
+
 @router.get("/full-tree", summary="部门树", response_model=list[response.QueryDeptTreeOut])
-async def dept_tree(user: NeedAuthorization, params=Depends(Params)):
+async def dept_tree(user: NeedAuthorization):
     """完整菜单树"""
     query_sets = await Dept.all().prefetch_related("parent")
     tree = construct_tree(query_sets)
@@ -76,7 +98,8 @@ async def create_dept(user: NeedAuthorization, items: request.CreateDeptIn):
 async def put_dept(pk: int, user: NeedAuthorization, items: request.CreateDeptIn):
     """修改部门"""
     instance = await get_instance(Dept, pk)
-    await Role.filter(id=instance.id).update(**items.model_dump())
+    modifier_id = user.id
+    await Role.filter(id=instance.id).update(**items.model_dump(), modifier_id=modifier_id)
     instance = await Dept.get(id=pk)
     output = dict(await response.DeptNoParentOut.from_tortoise_orm(instance))
     parent = await instance.parent
@@ -91,9 +114,10 @@ async def put_dept(pk: int, user: NeedAuthorization, items: request.CreateDeptIn
     return instance
 
 
-@router.delete("/{pk}", summary="删除角色")
+@router.delete("/{pk}", summary="删除部门")
 async def delete_dept(pk: int, user: NeedAuthorization):
     """删除部门"""
     instance = await get_instance(Dept, pk)
+    await Dept.filter(parent=instance).update(parent=None)
     await instance.delete()
     return

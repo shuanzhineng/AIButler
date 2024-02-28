@@ -32,7 +32,7 @@ class Settings(BaseSettings):
     DATE_FORMAT: str = "%Y-%m-%d"  # 日期时间格式配置
 
     TORTOISE_ORM_MODELS: list[str] = [
-        "apps.account.models.db",
+        # "apps.account.models.db",
         "apps.system.models.db",
         # "apps.core.models.db",
     ]
@@ -49,9 +49,7 @@ class Settings(BaseSettings):
     LOG_DIR: str = "logs/"  # 日志存储目录
 
     LOG_WRITE_FILE: bool = True
-    LOG_WRITE_FILE_FORMAT: str = (
-        "{time:YYYY-MM-DD HH:mm:ss} | {level} | {file}.{function}:{line} | {message}"
-    )
+    LOG_WRITE_FILE_FORMAT: str = "{time:YYYY-MM-DD HH:mm:ss} | {level} | {file}.{function}:{line} | {message}"
     # 不修建议修改控制台的format, loguru默认带的format
     # 可以基本满足需求, 且每种级别区分了不同颜色
     LOG_STDERR_FORMAT: str | None = None

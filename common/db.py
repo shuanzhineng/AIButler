@@ -14,13 +14,14 @@ class DBBaseModel(Model):
     creator = fields.ForeignKeyField(
         "models.User",
         on_delete=OnDelete.NO_ACTION,
-        description="上级菜单",
+        description="创建人",
         null=True,
-        db_constraint=False
+        db_constraint=False,
+        related_name=False,
     )
 
-    modifier_id = fields.CharField(max_length=255, null=True, description="修改人id")
-    dept_belong_id = fields.CharField(max_length=255, null=True, description="数据归属部门id")
+    modifier_id = fields.BigIntField(null=True, description="修改人id")
+    dept_belong_id = fields.BigIntField(null=True, description="数据归属部门id")
 
     class Meta:
         abstract = True

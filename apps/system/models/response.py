@@ -2,7 +2,7 @@ from common.base_pydantic import CustomBaseModel
 from pydantic import field_validator
 from typing import Literal
 from typing_extensions import TypedDict
-from apps.system.models.db import Menu, Role, Dept
+from apps.system.models.db import Menu, Role, Dept, User
 from common.enums import MenuGenreEnum
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
@@ -96,3 +96,13 @@ class QueryDeptTreeOut(DeptNoParentOut):
     """查询菜单树响应体参数"""
 
     children: list["QueryDeptTreeOut"] = []
+
+
+# ---------------------用户model------------------------
+
+_UserOut = pydantic_model_creator(User, name="_UserOut", exclude=("password",))
+
+
+class UserOut(_UserOut, CustomBaseModel):  # type: ignore
+    roles: list[RoleOut] = []
+    depts: list[DeptNoParentOut] = []

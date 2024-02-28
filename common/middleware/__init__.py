@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 
-from common.middleware.access_middleware import AccessMiddleware
+from common.middleware.access_log_middleware import AccessLogMiddleware
 from conf.settings import settings
 
 
@@ -18,4 +18,4 @@ def register_middleware(app: FastAPI) -> None:
         )
 
     app.add_middleware(GZipMiddleware)
-    app.add_middleware(AccessMiddleware)
+    app.add_middleware(AccessLogMiddleware)

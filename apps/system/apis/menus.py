@@ -8,11 +8,11 @@ from fastapi_pagination import Page, Params
 from http import HTTPStatus
 from tortoise.transactions import atomic
 from fastapi_pagination.ext.tortoise import paginate
+from common.custom_route import CustomRoute
+
 
 router = APIRouter(
-    prefix="/menus",
-    tags=["菜单管理"],
-    responses={404: {"description": "Not found"}},
+    prefix="/menus", tags=["菜单管理"], responses={404: {"description": "Not found"}}, route_class=CustomRoute
 )
 
 
@@ -30,7 +30,7 @@ async def menus(user: NeedAuthorization, params=Depends(Params), parent_id: int 
 
 
 @router.get("/full-tree", summary="菜单树", response_model=list[response.QueryMenuTreeOut])
-async def menu_tree(user: NeedAuthorization, params=Depends(Params)):
+async def menu_tree(user: NeedAuthorization):
     """完整菜单树"""
     query_sets = await Menu.all().prefetch_related("parent")
     tree = construct_tree(query_sets)
@@ -53,7 +53,7 @@ async def buttons(pk: int, user: NeedAuthorization, params=Depends(Params)):
 
 
 @router.put("/buttons/{pk}", summary="修改按钮", response_model=response.QueryButtonOut)
-async def put_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorization, params=Depends(Params)):
+async def put_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorization):
     """修改按钮"""
     instance = await get_instance(Menu, pk)
     items = items.model_dump()
@@ -62,6 +62,7 @@ async def put_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorizat
     async def _patch():
         nonlocal instance
         apis = items.pop("apis")
+        items["modifier_id"] = user.id
         await Menu.filter(id=instance.id).update(**items)
         api_perms = await instance.api_perms.all()
         for api_perm in api_perms:
@@ -136,6 +137,7 @@ async def put_menu(pk: int, user: NeedAuthorization, items: request.CreateMenuIn
     """修改菜单"""
     instance = await get_instance(Menu, pk)
     items = items.model_dump()
+    items["modifier_id"] = user.id
     parent_id = items.pop("parent_id")
     parent = await Menu.get(id=parent_id)
     await Menu.filter(id=instance.id).update(**items, parent=parent)
@@ -157,5 +159,6 @@ async def put_menu(pk: int, user: NeedAuthorization, items: request.CreateMenuIn
 async def delete_menu(pk: int, user: NeedAuthorization):
     """删除菜单"""
     instance = await get_instance(Menu, pk)
+    await Menu.filter(parent=instance).update(parent=None)
     await instance.delete()
     return
