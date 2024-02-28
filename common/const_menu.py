@@ -27,10 +27,9 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/menus"
-                            }
+                            {"method": "GET", "api": "/system/menus"},
+                            {"method": "GET", "api": "/system/menus/full-tree"},
+                            {"method": "GET", "api": "/system/menus/{pk}/buttons"},
                         ],
                     },
                     {
@@ -38,24 +37,14 @@ INIT_MENU = [
                         "sort": 11200,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/menus/{id}"
-                            }
-                        ],
+                        "apis": [{"method": "GET", "api": "/system/menus/{id}"}],
                     },
                     {
                         "name": "新增",
                         "sort": 11300,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "POST",
-                                "api": "/system/menus"
-                            }
-                        ],
+                        "apis": [{"method": "POST", "api": "/system/menus"}],
                     },
                     {
                         "name": "编辑",
@@ -63,14 +52,8 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "PUT",
-                                "api": "/system/menus/{id}"
-                            },
-                            {
-                                "method": "PATCH",
-                                "api": "/system/menus/{id}"
-                            },
+                            {"method": "PUT", "api": "/system/menus/{id}"},
+                            {"method": "PUT", "api": "/system/menus/buttons/{pk}"},
                         ],
                     },
                     {
@@ -79,13 +62,11 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "DELETE",
-                                "api": "/system/menus/{id}"
-                            },
+                            {"method": "DELETE", "api": "/system/menus/{id}"},
+                            {"method": "DELETE", "api": "/system/menus/buttons/{pk}"},
                         ],
                     },
-                ]
+                ],
             },
             {
                 "name": "角色管理",
@@ -104,10 +85,7 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/roles"
-                            }
+                            {"method": "GET", "api": "/system/roles"},
                         ],
                     },
                     {
@@ -115,24 +93,14 @@ INIT_MENU = [
                         "sort": 12200,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/roles/{id}"
-                            }
-                        ],
+                        "apis": [{"method": "GET", "api": "/system/roles/{id}"}],
                     },
                     {
                         "name": "新增",
                         "sort": 12300,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "POST",
-                                "api": "/system/roles"
-                            }
-                        ],
+                        "apis": [{"method": "POST", "api": "/system/roles"}],
                     },
                     {
                         "name": "编辑",
@@ -140,14 +108,8 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "PUT",
-                                "api": "/system/roles/{id}"
-                            },
-                            {
-                                "method": "PATCH",
-                                "api": "/system/roles/{id}"
-                            },
+                            {"method": "PUT", "api": "/system/roles/{id}"},
+                            {"method": "PATCH", "api": "/system/roles/{id}"},
                         ],
                     },
                     {
@@ -156,13 +118,10 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "DELETE",
-                                "api": "/system/roles/{id}"
-                            },
+                            {"method": "DELETE", "api": "/system/roles/{id}"},
                         ],
                     },
-                ]
+                ],
             },
             {
                 "name": "部门管理",
@@ -181,10 +140,8 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/depts"
-                            }
+                            {"method": "GET", "api": "/system/depts"},
+                            {"method": "GET", "api": "/system/depts/full-tree"},
                         ],
                     },
                     {
@@ -192,24 +149,14 @@ INIT_MENU = [
                         "sort": 13200,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/depts/{id}"
-                            }
-                        ],
+                        "apis": [{"method": "GET", "api": "/system/depts/{id}"}],
                     },
                     {
                         "name": "新增",
                         "sort": 13300,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "POST",
-                                "api": "/system/depts"
-                            }
-                        ],
+                        "apis": [{"method": "POST", "api": "/system/depts"}],
                     },
                     {
                         "name": "编辑",
@@ -217,14 +164,8 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "PUT",
-                                "api": "/system/depts/{id}"
-                            },
-                            {
-                                "method": "PATCH",
-                                "api": "/system/depts/{id}"
-                            },
+                            {"method": "PUT", "api": "/system/depts/{id}"},
+                            {"method": "PATCH", "api": "/system/depts/{id}"},
                         ],
                     },
                     {
@@ -233,13 +174,10 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "DELETE",
-                                "api": "/system/depts/{id}"
-                            },
+                            {"method": "DELETE", "api": "/system/depts/{id}"},
                         ],
                     },
-                ]
+                ],
             },
             {
                 "name": "用户管理",
@@ -256,36 +194,21 @@ INIT_MENU = [
                         "sort": 13100,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/users"
-                            }
-                        ],
+                        "apis": [{"method": "GET", "api": "/system/users"}],
                     },
                     {
                         "name": "详情",
                         "sort": 13200,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "GET",
-                                "api": "/system/users/{id}"
-                            }
-                        ],
+                        "apis": [{"method": "GET", "api": "/system/users/{id}"}],
                     },
                     {
                         "name": "新增",
                         "sort": 13300,
                         "genre": "BUTTON",
                         "disabled": False,
-                        "apis": [
-                            {
-                                "method": "POST",
-                                "api": "/system/users"
-                            }
-                        ],
+                        "apis": [{"method": "POST", "api": "/system/users"}],
                     },
                     {
                         "name": "编辑",
@@ -293,14 +216,8 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "PUT",
-                                "api": "/system/users/{id}"
-                            },
-                            {
-                                "method": "PATCH",
-                                "api": "/system/users/{id}"
-                            },
+                            {"method": "PUT", "api": "/system/users/{id}"},
+                            {"method": "PATCH", "api": "/system/users/{id}"},
                         ],
                     },
                     {
@@ -309,15 +226,11 @@ INIT_MENU = [
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
-                            {
-                                "method": "DELETE",
-                                "api": "/system/users/{id}"
-                            },
+                            {"method": "DELETE", "api": "/system/users/{id}"},
                         ],
                     },
-                ]
-            }
-        ]
+                ],
+            },
+        ],
     }
-
 ]
