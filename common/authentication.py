@@ -56,7 +56,10 @@ async def get_user(user_id: str) -> AUTH_USER_MODEL | None:
 
 
 async def authenticate_user(username: str, password: str) -> AUTH_USER_MODEL:
-    user = await AUTH_USER_MODEL.get(username=username)
+    try:
+        user = await AUTH_USER_MODEL.get(username=username)
+    except DoesNotExist:
+        raise JWTTokenError.UserNegationError
     if not user:
         raise JWTTokenError.InvalidUserError
     verify_result = await user.verify_password(password)

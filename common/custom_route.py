@@ -34,9 +34,15 @@ class CustomRoute(APIRoute):
             browser = ""
             os = ""
             if family := user_agent.get("family"):
-                browser = f"{family} {user_agent.get('major')}.{user_agent.get('minor')}.{user_agent.get('patch')}"
+                major = user_agent.get("major") or ""
+                minor = user_agent.get("minor") or ""
+                patch = user_agent.get("patch") or ""
+                browser = f"{family} {major}.{minor}.{patch}"
             if family := os_info.get("family"):
-                os = f"{family} {os_info.get('major')}.{os_info.get('minor')}.{os_info.get('patch')}"
+                major = os_info.get("major") or ""
+                minor = os_info.get("minor") or ""
+                patch = os_info.get("patch") or ""
+                os = f"{family} {major}.{minor}.{patch}"
 
             if request.url.path == LOGIN_PATH:
                 request_form = dict(await request.form())

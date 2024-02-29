@@ -22,10 +22,14 @@ class JWTTokenError:
         default_detail = "密码输入有误!"
         default_code = "10004"
 
+    class UserNegationError(CustomException):
+        status_code = 400
+        default_detail = "用户不存在!"
+        default_code = "10005"
+
 
 class CommonError:
     class ResourceDoesNotExistError(CustomException):
         status_code = 400
         default_detail = "输入的资源id不存在!"
         default_code = "20001"
-

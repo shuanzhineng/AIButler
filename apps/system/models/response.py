@@ -2,7 +2,7 @@ from common.base_pydantic import CustomBaseModel
 from pydantic import field_validator
 from typing import Literal
 from typing_extensions import TypedDict
-from apps.system.models.db import Menu, Role, Dept, User
+from apps.system.models.db import Menu, Role, Dept, User, LoginLog, AccessLog
 from common.enums import MenuGenreEnum
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
@@ -108,3 +108,19 @@ _UserOut = pydantic_model_creator(User, name="_UserOut", exclude=("password",))
 class UserOut(_UserOut, CustomBaseModel):  # type: ignore
     roles: list[RoleOut] = []
     depts: list[DeptNoParentOut] = []
+
+
+# ---------------------日志model------------------------
+
+_LoginLogOut = pydantic_model_creator(LoginLog, name="_LoginLogOut")
+
+
+class LoginLogOut(_LoginLogOut, CustomBaseModel):  # type: ignore
+    pass
+
+
+_AccessLogOut = pydantic_model_creator(AccessLog, name="_AccessLogOut")
+
+
+class AccessLogOut(_AccessLogOut, CustomBaseModel):  # type: ignore
+    pass
