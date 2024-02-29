@@ -21,4 +21,7 @@ services:
           - -c
           - |
             poetry run aerich upgrade
-            poetry run granian --interface asgi main:app --host=0.0.0.0 --port=9000  --workers=2
+            poetry run uvicorn main:app --host=0.0.0.0 --port=9000  --workers=2
+
+# poetry run granian --interface asgi main:app --host=0.0.0.0 --port=9000  --workers=2
+# granian暂时不可用, 与fastapi中间件冲突 issue: https://github.com/emmett-framework/granian/issues/216

@@ -8,6 +8,8 @@ from conf.settings import settings
 
 async def add_dept_belong_id(_, obj, *args, **kwargs):
     """自动添加数据归属部门"""
+    if not obj.creator:
+        return
     creator = await obj.creator
     if not obj.id and creator:
         obj.dept_belong_id = None

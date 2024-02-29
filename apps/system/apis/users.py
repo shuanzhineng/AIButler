@@ -30,6 +30,7 @@ async def users(user: NeedAuthorization, keyword: str = "", disabled: bool | Non
         )
     if disabled is not None:
         query_sets = query_sets.filter(disabled=disabled)
+    query_sets = query_sets.prefetch_related("roles", "depts")
     return await paginate(query_sets, params=params)
 
 
@@ -37,6 +38,7 @@ async def users(user: NeedAuthorization, keyword: str = "", disabled: bool | Non
 async def retrieve_role(pk: int, user: NeedAuthorization):
     """角色详情"""
     instance = await get_instance(User, pk)
+    await instance.fetch_related("roles", "depts")
     return instance
 
 
@@ -47,10 +49,10 @@ async def create_user(user: NeedAuthorization, items: request.CreateUserIn):
     role_ids = items.pop("role_ids")
     dept_ids = items.pop("dept_ids")
     password = items.pop("password")
+    username = items.pop("username")
     roles = await Role.filter(id__in=role_ids)
     depts = await Dept.filter(id__in=dept_ids)
-    instance = await User.create(**items, creator=user)
-    await instance.change_password(password)
+    instance = await User.create_user(username, password, **items, creator=user)
     await instance.roles.add(*roles)
     await instance.depts.add(*depts)
     await instance.fetch_related("roles", "depts")
@@ -67,11 +69,11 @@ async def put_user(pk: int, user: NeedAuthorization, items: request.PutUserIn):
     async def _patch():
         role_ids = items.pop("role_ids")
         dept_ids = items.pop("dept_ids")
-        items.pop("password")  # 修改用户时不允许修改密码, 密码单独接口修改
+        items.pop("password", None)  # 修改用户时不允许修改密码, 密码单独接口修改
         roles = await Role.filter(id__in=role_ids)
         depts = await Dept.filter(id__in=dept_ids)
 
-        await Role.filter(id=instance.id).update(**items)
+        await User.filter(id=instance.id).update(**items)
 
         await instance.roles.clear()
         await instance.depts.clear()
@@ -84,7 +86,7 @@ async def put_user(pk: int, user: NeedAuthorization, items: request.PutUserIn):
 
 
 @router.put("/{pk}/password", summary="修改密码")
-async def change_user_password(pk: int, user: NeedAuthorization, items: request.ChangePassword):
+async def change_user_password(pk: int, user: NeedAuthorization, items: request.ChangePasswordIn):
     """修改密码"""
     instance = await get_instance(User, pk)
     await instance.change_password(items.password)

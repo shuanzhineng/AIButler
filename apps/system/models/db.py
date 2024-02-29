@@ -13,7 +13,7 @@ class User(DBBaseModel):
 
     id = fields.BigIntField(pk=True, description="主键id")
     name = fields.CharField(max_length=255, description="用户姓名", default="")
-    username = fields.CharField(max_length=255, description="用户名")
+    username = fields.CharField(max_length=255, description="用户名", unique=True)
     password = fields.CharField(max_length=255, description="密码hash值")
     phone = fields.CharField(max_length=255, description="手机号", default="")
     email = fields.CharField(max_length=255, description="邮箱", default="")

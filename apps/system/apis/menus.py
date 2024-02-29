@@ -16,12 +16,13 @@ router = APIRouter(
 )
 
 
-# TODO 增加修改人和归属部门
 @router.get("", summary="菜单列表", response_model=Page[response.QueryMenuOut])
-async def menus(user: NeedAuthorization, params=Depends(Params), parent_id: int | None = None):
+async def menus(user: NeedAuthorization, params=Depends(Params), parent_id: str | None = None):
     """index"""
+    if not parent_id:
+        parent_id = None
     query_sets = Menu.filter(parent=parent_id, genre__in=[MenuGenreEnum.DIRECTORY, MenuGenreEnum.PAGE])
-    output = await paginate(query_sets)
+    output = await paginate(query_sets, params=params)
     # 在分页结果中修改child
     for obj in output.items:
         hava_child = bool(await Menu.filter(parent=obj.id))
@@ -45,15 +46,40 @@ async def menu_tree(user: NeedAuthorization):
 async def buttons(pk: int, user: NeedAuthorization, params=Depends(Params)):
     """菜单下的按钮"""
     query_sets = Menu.filter(parent=pk, genre=MenuGenreEnum.BUTTON)
-    output = await paginate(query_sets)
+    output = await paginate(query_sets, params=params)
     for obj in output.items:
         menu = await Menu.get(pk=obj.id)
         obj.apis = list(await menu.api_perms.all().values("method", "api"))
     return output
 
 
+@router.put("/buttons", summary="新增按钮", response_model=response.QueryButtonOut)
+async def create_button(items: request.CreateButtonIn, user: NeedAuthorization):
+    """修改按钮"""
+    items = items.model_dump()
+
+    @atomic()
+    async def _create():
+        apis = items.pop("apis")
+        items["modifier_id"] = user.id
+        instance = await Menu.create(**items)
+
+        bulk_data = []
+        for api in apis:
+            bulk_data.append(MenuAPIPermission(**api, menu=instance))
+        await MenuAPIPermission.bulk_create(bulk_data)
+        api_perms = await instance.api_perms.all()
+        _output = dict(await response.QueryButtonOut.from_tortoise_orm(instance))
+        apis = [{"method": api_perm.method.value, "api": api_perm.api} for api_perm in api_perms]
+        _output["apis"] = apis
+        return _output
+
+    output = await _create()
+    return output
+
+
 @router.put("/buttons/{pk}", summary="修改按钮", response_model=response.QueryButtonOut)
-async def put_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorization):
+async def put_button(pk: int, items: request.CreateButtonIn, user: NeedAuthorization):
     """修改按钮"""
     instance = await get_instance(Menu, pk)
     items = items.model_dump()
@@ -82,7 +108,7 @@ async def put_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorizat
 
 
 @router.delete("/buttons/{pk}", summary="删除按钮")
-async def delete_button(pk: int, items: request.PatchButtonIn, user: NeedAuthorization, params=Depends(Params)):
+async def delete_button(pk: int, user: NeedAuthorization):
     """删除按钮"""
     instance = await get_instance(Menu, pk)
 
@@ -159,6 +185,6 @@ async def put_menu(pk: int, user: NeedAuthorization, items: request.CreateMenuIn
 async def delete_menu(pk: int, user: NeedAuthorization):
     """删除菜单"""
     instance = await get_instance(Menu, pk)
-    await Menu.filter(parent=instance).update(parent=None)
+    await Menu.filter(parent=instance).update(parent_id=None)
     await instance.delete()
     return

@@ -25,7 +25,7 @@ class API(TypedDict):
     api: str
 
 
-class PatchButtonIn(CustomBaseModel):
+class CreateButtonIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=30)
     sort: int = Field(ge=0)
     disabled: bool = False
@@ -52,7 +52,7 @@ class PutRoleIn(CustomBaseModel):
     @field_validator("dept_ids")
     @classmethod
     def validate_data_range(cls, v, values):
-        if not v and values["data_range"] == DataScopeEnum.CUSTOM:
+        if not v and values.data["data_range"] == DataScopeEnum.CUSTOM:
             raise ValueError("自定数据权限时 dept_ids 不能为空")
         return v
 
@@ -66,7 +66,7 @@ class CreateDeptIn(CustomBaseModel):
     phone: str = Field(min_length=11, max_length=11, pattern=r"^1\d{10}$")
     email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])
     disabled: bool = False
-    sort: int = Field(ge=0)
+    sort: int = Field(ge=0, default=1)
     description: str = Field(min_length=0, max_length=200)
     parent_id: int | None = None
 
@@ -90,14 +90,14 @@ class CreateUserIn(PutUserIn):
     password: str = Field(min_length=8, max_length=30)
 
 
-class ChangePassword(CustomBaseModel):
+class ChangePasswordIn(CustomBaseModel):
     password: str = Field(min_length=8, max_length=30)
     password2: str = Field(min_length=8, max_length=30)
 
-    @field_validator("password")
+    @field_validator("password2")
     @classmethod
-    def validate_data_range(cls, v, values):
-        password2 = values["password2"]
-        if v != password2:
+    def validate_password(cls, v, values):
+        password = values.data["password"]
+        if v != password:
             raise ValueError("两次输入的密码不一致!")
         return v

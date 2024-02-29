@@ -23,20 +23,22 @@ _ButtonNoParentOut = pydantic_model_creator(
 
 
 class MenuNoParentOut(_MenuNoParentOut, CustomBaseModel):  # type: ignore
-    pass
-
-
-class MenuDetailOut(MenuNoParentOut):
-    """创建菜单响应体参数"""
-
-    parent: dict | None
+    genre: dict[str, str] | str
 
     @field_validator(
         "genre",
     )
     @classmethod
     def change_genre(cls, v):
-        return {"name": MenuGenreEnum.get_display(v), "value": v}
+        if not isinstance(v, dict):
+            return {"name": MenuGenreEnum.get_display(v), "value": v}
+        return v
+
+
+class MenuDetailOut(MenuNoParentOut):
+    """创建菜单响应体参数"""
+
+    parent: dict | None
 
 
 class QueryMenuOut(MenuNoParentOut):
@@ -89,7 +91,7 @@ class QueryDeptOut(DeptNoParentOut):
 
 
 class DeptDetailOut(DeptNoParentOut, CustomBaseModel):
-    parent: dict | None
+    parent: dict | None = None
 
 
 class QueryDeptTreeOut(DeptNoParentOut):

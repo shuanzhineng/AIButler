@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends
-from apps.system.models.db import Role, Dept
+from apps.system.models.db import Dept
 from apps.system.models import request, response
 from apps.account.depends import NeedAuthorization
 from common.utils import get_instance, construct_tree
@@ -15,10 +15,12 @@ router = APIRouter(
 
 
 @router.get("", summary="部门列表", response_model=Page[response.QueryDeptOut])
-async def depts(user: NeedAuthorization, parent_id: int | None = None, params=Depends(Params)):
+async def depts(user: NeedAuthorization, parent_id: str | None = None, params=Depends(Params)):
     """部门列表"""
+    if not parent_id:
+        parent_id = None
     query_sets = Dept.filter(parent=parent_id)
-    output = await paginate(query_sets)
+    output = await paginate(query_sets, params=params)
     # 在分页结果中修改child
     for obj in output.items:
         hava_child = bool(await Dept.filter(parent=obj.id))
@@ -74,7 +76,7 @@ async def retrieve_dept(pk: int, user: NeedAuthorization):
         else:
             output["parent"] = None
             break
-    return instance
+    return output
 
 
 @router.post("", summary="创建部门", response_model=response.DeptDetailOut, status_code=HTTPStatus.CREATED)
@@ -99,7 +101,7 @@ async def put_dept(pk: int, user: NeedAuthorization, items: request.CreateDeptIn
     """修改部门"""
     instance = await get_instance(Dept, pk)
     modifier_id = user.id
-    await Role.filter(id=instance.id).update(**items.model_dump(), modifier_id=modifier_id)
+    await Dept.filter(id=instance.id).update(**items.model_dump(), modifier_id=modifier_id)
     instance = await Dept.get(id=pk)
     output = dict(await response.DeptNoParentOut.from_tortoise_orm(instance))
     parent = await instance.parent
@@ -118,6 +120,6 @@ async def put_dept(pk: int, user: NeedAuthorization, items: request.CreateDeptIn
 async def delete_dept(pk: int, user: NeedAuthorization):
     """删除部门"""
     instance = await get_instance(Dept, pk)
-    await Dept.filter(parent=instance).update(parent=None)
+    await Dept.filter(parent=instance).update(parent_id=None)
     await instance.delete()
     return

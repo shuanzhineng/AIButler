@@ -51,8 +51,8 @@ async def put_role(pk: int, user: NeedAuthorization, items: request.CreateRoleIn
     return instance
 
 
-@router.patch("/{pk}/permission", summary="修改角色权限")
-async def patch_role_permission(pk: int, user: NeedAuthorization, items: request.PutRoleIn):
+@router.put("/{pk}/permission", summary="修改角色权限")
+async def put_role_permission(pk: int, user: NeedAuthorization, items: request.PutRoleIn):
     """修改角色权限"""
     instance = await get_instance(Role, pk)
     items = items.model_dump()
