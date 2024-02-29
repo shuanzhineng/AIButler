@@ -113,22 +113,22 @@ CREATE TABLE IF NOT EXISTS `role` (
     `data_range` SMALLINT NOT NULL  COMMENT '数据范围' DEFAULT 0,
     `creator_id` BIGINT
 ) CHARACTER SET utf8mb4 COMMENT='角色';
-CREATE TABLE IF NOT EXISTS `user_role` (
-    `user_id` BIGINT NOT NULL,
-    `role_id` BIGINT NOT NULL
-) CHARACTER SET utf8mb4 COMMENT='角色';
 CREATE TABLE IF NOT EXISTS `user_dept` (
     `user_id` BIGINT NOT NULL,
     `dept_id` BIGINT NOT NULL
 ) CHARACTER SET utf8mb4 COMMENT='部门';
-CREATE TABLE IF NOT EXISTS `role_menu` (
-    `role_id` BIGINT NOT NULL,
-    `menu_id` BIGINT NOT NULL
-) CHARACTER SET utf8mb4 COMMENT='具备权限的菜单';
+CREATE TABLE IF NOT EXISTS `user_role` (
+    `user_id` BIGINT NOT NULL,
+    `role_id` BIGINT NOT NULL
+) CHARACTER SET utf8mb4 COMMENT='角色';
 CREATE TABLE IF NOT EXISTS `role_dept` (
     `role_id` BIGINT NOT NULL,
     `dept_id` BIGINT NOT NULL
-) CHARACTER SET utf8mb4 COMMENT='自定义数据权限勾选的部门';"""
+) CHARACTER SET utf8mb4 COMMENT='自定义数据权限勾选的部门';
+CREATE TABLE IF NOT EXISTS `role_menu` (
+    `role_id` BIGINT NOT NULL,
+    `menu_id` BIGINT NOT NULL
+) CHARACTER SET utf8mb4 COMMENT='具备权限的菜单';"""
 
 
 async def downgrade(db: BaseDBAsyncClient) -> str:
