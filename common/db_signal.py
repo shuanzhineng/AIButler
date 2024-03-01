@@ -12,9 +12,7 @@ async def add_dept_belong_id(_, obj, *args, **kwargs):
         return
     creator = await obj.creator
     if not obj.id and creator:
-        obj.dept_belong_id = None
-        if dept_obj := await creator.depts.all().first():
-            obj.dept_belong_id = dept_obj.id
+        obj.dept_belong = await creator.depts.all().first()
 
 
 def registration_db_signal():

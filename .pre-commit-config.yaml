@@ -45,4 +45,5 @@ repos:
           - types-pytz
           - types-PyMySQL
           - types-requests
+          - types-aiofiles
         args:  [--ignore-missing-imports]

@@ -19,9 +19,22 @@ class DBBaseModel(Model):
         db_constraint=False,
         related_name=False,
     )
-
-    modifier_id = fields.BigIntField(null=True, description="修改人id")
-    dept_belong_id = fields.BigIntField(null=True, description="数据归属部门id")
+    modifier = fields.ForeignKeyField(
+        "models.User",
+        on_delete=OnDelete.NO_ACTION,
+        description="修改人",
+        null=True,
+        db_constraint=False,
+        related_name=False,
+    )
+    dept_belong = fields.ForeignKeyField(
+        "models.Dept",
+        on_delete=OnDelete.NO_ACTION,
+        description="数据归属部门",
+        null=True,
+        db_constraint=False,
+        related_name=False,
+    )
 
     class Meta:
         abstract = True

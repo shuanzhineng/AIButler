@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     # REDOCS_URL: str = ""
     # 时区
     # 静态文件代理
-    STATIC_FILE: bool = False  # 是否使用静态文件服务
+    STATIC_FILE: bool = True  # 是否使用静态文件服务
     STATIC_PATH: str = "/static"  # 静态文件访问路径
     STATIC_DIR: str = "static"  # 静态文件存放目录
 
@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     TORTOISE_ORM_MODELS: list[str] = [
         # "apps.account.models.db",
         "apps.system.models.db",
-        # "apps.core.models.db",
+        "apps.data.models.db",
     ]
 
     # Redis

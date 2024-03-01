@@ -61,7 +61,7 @@ async def create_button(items: request.CreateButtonIn, user: NeedAuthorization):
     @atomic()
     async def _create():
         apis = items.pop("apis")
-        items["modifier_id"] = user.id
+        items["modifier"] = user
         instance = await Menu.create(**items)
 
         bulk_data = []
@@ -88,7 +88,7 @@ async def put_button(pk: int, items: request.CreateButtonIn, user: NeedAuthoriza
     async def _patch():
         nonlocal instance
         apis = items.pop("apis")
-        items["modifier_id"] = user.id
+        items["modifier"] = user
         await Menu.filter(id=instance.id).update(**items)
         api_perms = await instance.api_perms.all()
         for api_perm in api_perms:
@@ -163,7 +163,7 @@ async def put_menu(pk: int, user: NeedAuthorization, items: request.CreateMenuIn
     """修改菜单"""
     instance = await get_instance(Menu, pk)
     items = items.model_dump()
-    items["modifier_id"] = user.id
+    items["modifier"] = user
     parent_id = items.pop("parent_id")
     parent = await Menu.get(id=parent_id)
     await Menu.filter(id=instance.id).update(**items, parent=parent)

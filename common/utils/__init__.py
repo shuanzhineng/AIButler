@@ -8,7 +8,6 @@ from common.db import DBBaseModel
 from common.exceptions import CommonError
 from tortoise.exceptions import DoesNotExist
 from typing import Type, TypeVar
-from tortoise.queryset import QuerySet
 
 MODEL = TypeVar("MODEL", bound=DBBaseModel)
 

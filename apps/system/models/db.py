@@ -12,6 +12,7 @@ class User(DBBaseModel):
     """用户表"""
 
     id = fields.BigIntField(pk=True, description="主键id")
+    is_superuser = fields.BooleanField(default=False, description="是否为超级用户")
     name = fields.CharField(max_length=255, description="用户姓名", default="")
     username = fields.CharField(max_length=255, description="用户名", unique=True)
     password = fields.CharField(max_length=255, description="密码hash值")

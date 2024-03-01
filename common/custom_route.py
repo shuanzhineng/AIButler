@@ -9,13 +9,18 @@ from jose import jwt
 
 from apps.system.models.db import User
 from conf.settings import settings
+import re
 
 SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = settings.ALGORITHM
 
 AUTH_USER_MODEL = User
 LOGIN_PATH = "/account/oauth2/token"
-NO_LOG_PATH: list[str] = []  # 登录接口和涉及文件上传和下载的接口不记录日志
+NO_LOG_PATHS: list[str] = [
+    r"/account/oauth2/token",
+    r"/data/label-tasks/\d+?/attachments",
+    r"/static/.*",
+]  # 登录接口和涉及文件上传和下载的接口不记录日志
 
 
 class CustomRoute(APIRoute):
@@ -54,28 +59,30 @@ class CustomRoute(APIRoute):
                     http_status_code=response.status_code,
                     is_success=True if response.status_code == 200 else False,
                 )
-            elif request.url.path not in NO_LOG_PATH:
-                # 记录访问日志
-                request_body: bytes = await request.body()
-                # 提取操作人
-                authorization = request.headers.get("Authorization")
-                _, token = get_authorization_scheme_param(authorization)
-                user = None
-                if token:
-                    payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-                    user_id = payload.get("user_id")
-                    user = await User.filter(id=user_id).first()
-                await AccessLog.create(
-                    api=request.url.path + "?" + request.url.query,
-                    method=request.method,
-                    ip_address=request.client.host,
-                    browser=browser,
-                    os=os,
-                    http_status_code=response.status_code,
-                    request_body=request_body.decode(),
-                    response_body=response_body.decode(),
-                    creator=user,
-                )
+            for no_log_path in NO_LOG_PATHS:
+                if re.findall(no_log_path, request.url.path):
+                    return response
+            # 记录访问日志
+            request_body: bytes = await request.body()
+            # 提取操作人
+            authorization = request.headers.get("Authorization")
+            _, token = get_authorization_scheme_param(authorization)
+            user = None
+            if token:
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                user_id = payload.get("user_id")
+                user = await User.filter(id=user_id).first()
+            await AccessLog.create(
+                api=request.url.path + "?" + request.url.query,
+                method=request.method,
+                ip_address=request.client.host,
+                browser=browser,
+                os=os,
+                http_status_code=response.status_code,
+                request_body=request_body.decode(),
+                response_body=response_body.decode(),
+                creator=user,
+            )
             return response
 
         return custom_route_handler

@@ -15,6 +15,7 @@ deploy/docs/users.lst
 .envs/.test
 
 staticfiles/
+static/
 
 # celery
 celerybeat.pid

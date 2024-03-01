@@ -100,8 +100,8 @@ async def create_dept(user: NeedAuthorization, items: request.CreateDeptIn):
 async def put_dept(pk: int, user: NeedAuthorization, items: request.CreateDeptIn):
     """修改部门"""
     instance = await get_instance(Dept, pk)
-    modifier_id = user.id
-    await Dept.filter(id=instance.id).update(**items.model_dump(), modifier_id=modifier_id)
+    modifier = user
+    await Dept.filter(id=instance.id).update(**items.model_dump(), modifier=modifier)
     instance = await Dept.get(id=pk)
     output = dict(await response.DeptNoParentOut.from_tortoise_orm(instance))
     parent = await instance.parent

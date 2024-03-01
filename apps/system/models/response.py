@@ -1,4 +1,4 @@
-from common.base_pydantic import CustomBaseModel
+from common.base_pydantic import CustomBaseModel, CreatorOut
 from pydantic import field_validator
 from typing import Literal
 from typing_extensions import TypedDict
@@ -123,4 +123,4 @@ _AccessLogOut = pydantic_model_creator(AccessLog, name="_AccessLogOut")
 
 
 class AccessLogOut(_AccessLogOut, CustomBaseModel):  # type: ignore
-    pass
+    creator: CreatorOut | None = None

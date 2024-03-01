@@ -50,6 +50,7 @@ def init_logging():
         "fastapi",
         "uvicorn",
         "uvicorn.access",
+        "tortoise",
     ]
     for log_name in log_names:
         logging.getLogger(log_name).setLevel(LOG_LEVEL)
