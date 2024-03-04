@@ -250,13 +250,13 @@ async def export_to_datasets(
         if label := doc.find(".//filename"):
             file_name = str(label.text)
         if folder:
-            label_file_path = f"media/labelu/{task_id}/labels/{folder}-{file_name.split('.')[0]}.xml"
+            label_file_path = f"static/labelu/{task_id}/labels/{folder}-{file_name.split('.')[0]}.xml"
         else:
-            label_file_path = f"media/labelu/{task_id}/labels/{file_name.split('.')[0]}.xml"
+            label_file_path = f"static/labelu/{task_id}/labels/{file_name.split('.')[0]}.xml"
         async with aiofiles.open(label_file_path, "w") as f:
             await f.write(xml_str)
     # 压缩为zip
-    output_zip = f"media/labelu/label-{task_id}"
+    output_zip = f"static/labelu/label-{task_id}"
     await asyncify(shutil.make_archive)(output_zip, "zip", source_dir)
     # 上传到minio
     year_month = get_current_time().strftime("%Y-%m")
