@@ -1,4 +1,4 @@
-from common.base_pydantic import CustomBaseModel, CreatorOut
+from common.base_pydantic import CreatorOut, custom_base_model_config
 from pydantic import field_validator
 from typing import Literal
 from typing_extensions import TypedDict
@@ -7,7 +7,9 @@ from common.enums import MenuGenreEnum
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
 # ---------------------菜单model------------------------
-_MenuNoParentOut = pydantic_model_creator(Menu, name="_MenuNoParentOut", allow_cycles=True, exclude=("parent",))
+_MenuNoParentOut = pydantic_model_creator(
+    Menu, name="_MenuNoParentOut", exclude=("parent",), model_config=custom_base_model_config
+)
 
 
 _ButtonNoParentOut = pydantic_model_creator(
@@ -19,10 +21,11 @@ _ButtonNoParentOut = pydantic_model_creator(
         "sort",
         "disabled",
     ),
+    model_config=custom_base_model_config,
 )
 
 
-class MenuNoParentOut(_MenuNoParentOut, CustomBaseModel):  # type: ignore
+class MenuNoParentOut(_MenuNoParentOut):  # type: ignore
     genre: dict[str, str] | str
 
     @field_validator(
@@ -53,7 +56,7 @@ class QueryMenuTreeOut(MenuNoParentOut):
     children: list["QueryMenuTreeOut"] = []
 
 
-class QueryButtonOut(_ButtonNoParentOut, CustomBaseModel):  # type: ignore
+class QueryButtonOut(_ButtonNoParentOut):  # type: ignore
     """查询菜单响应体参数"""
 
     class API(TypedDict):
@@ -65,22 +68,21 @@ class QueryButtonOut(_ButtonNoParentOut, CustomBaseModel):  # type: ignore
 
 # ---------------------角色model------------------------
 
-_RoleOut = pydantic_model_creator(
-    Role,
-    name="_RoleOut",
-)
+_RoleOut = pydantic_model_creator(Role, name="_RoleOut", model_config=custom_base_model_config)
 
 
-class RoleOut(_RoleOut, CustomBaseModel):  # type: ignore
+class RoleOut(_RoleOut):  # type: ignore
     pass
 
 
 # ---------------------部门model------------------------
 
-_DeptNoParentOut = pydantic_model_creator(Dept, name="_DeptNoParentOut", allow_cycles=True, exclude=("parent",))
+_DeptNoParentOut = pydantic_model_creator(
+    Dept, name="_DeptNoParentOut", allow_cycles=True, exclude=("parent",), model_config=custom_base_model_config
+)
 
 
-class DeptNoParentOut(_DeptNoParentOut, CustomBaseModel):  # type: ignore
+class DeptNoParentOut(_DeptNoParentOut):  # type: ignore
     pass
 
 
@@ -90,7 +92,7 @@ class QueryDeptOut(DeptNoParentOut):
     child: bool = False
 
 
-class DeptDetailOut(DeptNoParentOut, CustomBaseModel):
+class DeptDetailOut(DeptNoParentOut):
     parent: dict | None = None
 
 
@@ -102,25 +104,25 @@ class QueryDeptTreeOut(DeptNoParentOut):
 
 # ---------------------用户model------------------------
 
-_UserOut = pydantic_model_creator(User, name="_UserOut", exclude=("password",))
+_UserOut = pydantic_model_creator(User, name="_UserOut", exclude=("password",), model_config=custom_base_model_config)
 
 
-class UserOut(_UserOut, CustomBaseModel):  # type: ignore
+class UserOut(_UserOut):  # type: ignore
     roles: list[RoleOut] = []
     depts: list[DeptNoParentOut] = []
 
 
 # ---------------------日志model------------------------
 
-_LoginLogOut = pydantic_model_creator(LoginLog, name="_LoginLogOut")
+_LoginLogOut = pydantic_model_creator(LoginLog, name="_LoginLogOut", model_config=custom_base_model_config)
 
 
-class LoginLogOut(_LoginLogOut, CustomBaseModel):  # type: ignore
+class LoginLogOut(_LoginLogOut):  # type: ignore
     pass
 
 
-_AccessLogOut = pydantic_model_creator(AccessLog, name="_AccessLogOut")
+_AccessLogOut = pydantic_model_creator(AccessLog, name="_AccessLogOut", model_config=custom_base_model_config)
 
 
-class AccessLogOut(_AccessLogOut, CustomBaseModel):  # type: ignore
+class AccessLogOut(_AccessLogOut):  # type: ignore
     creator: CreatorOut | None = None

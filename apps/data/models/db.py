@@ -1,8 +1,8 @@
-from common.enums import LabelTaskStatusEnum, MediaTypeEnum, LabelTaskSampleStateEnum
+from common.enums import LabelTaskStatusEnum, MediaTypeEnum, LabelTaskSampleStateEnum, AnnotationTypeEnum
 
 from tortoise import fields
 from tortoise.fields.base import OnDelete
-
+from conf.settings import settings
 from common.db import DBBaseModel
 
 
@@ -56,3 +56,68 @@ class LabelTaskSample(DBBaseModel):
     class Meta:
         table = "label_task_sample"
         table_description = "标注任务样本"
+
+
+class OssFile(DBBaseModel):
+    """对象存储文件"""
+
+    bucket = fields.CharField(max_length=255, description="数据桶", default=settings.MINIO_DEFAULT_BUCKET)
+    server_address = fields.CharField(
+        max_length=255, description="存储服务地址", default=f"{settings.MINIO_SERVER_HOST}:{settings.MINIO_SERVER_PORT}"
+    )
+
+    path = fields.CharField(
+        max_length=255,
+        description="存储路径",
+    )
+    filename = fields.CharField(max_length=255, description="文件名", default="")
+    file_size = fields.IntField(description="文件大小", null=True, default=None)
+
+    class Meta:
+        table = "oss_file"
+        table_description = "云存储文件"
+
+
+class DataSetGroup(DBBaseModel):
+    """数据集组"""
+
+    name = fields.CharField(
+        max_length=255,
+        description="数据集组名称",
+    )
+    description = fields.CharField(max_length=255, description="数据集组描述")
+    disabled = fields.BooleanField(description="是否禁用", default=False)
+    data_type = fields.CharEnumField(MediaTypeEnum, max_length=255, description="数据类型", default=MediaTypeEnum.IMAGE)
+    annotation_type = fields.CharEnumField(
+        AnnotationTypeEnum, max_length=255, description="数据类型", default=AnnotationTypeEnum.OBJECT_DETECTION
+    )
+
+    class Meta:
+        table = "data_set_group"
+        table_description = "数据集组"
+
+
+class DataSet(DBBaseModel):
+    """数据集"""
+
+    version = fields.IntField(default=1, description="数据集版本")
+    description = fields.CharField(max_length=255, description="数据集描述")
+    data_set_group = fields.ForeignKeyField(
+        "models.DataSetGroup",
+        on_delete=OnDelete.NO_ACTION,
+        description="数据集组",
+        db_constraint=False,
+        related_name="data_sets",
+    )
+    file = fields.ForeignKeyField(
+        "models.OssFile",
+        on_delete=OnDelete.NO_ACTION,
+        description="文件",
+        db_constraint=False,
+        related_name="data_sets",
+        null=True,
+    )
+
+    class Meta:
+        table = "data_set"
+        table_description = "数据集"

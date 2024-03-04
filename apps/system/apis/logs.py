@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from apps.system.models.db import LoginLog, AccessLog
 from apps.system.models import response
-from apps.account.depends import NeedAuthorization
+from common.depends import data_range_permission
 from fastapi_pagination import Page, Params, paginate
 from common.custom_route import CustomRoute
 
@@ -12,13 +12,12 @@ router = APIRouter(
 
 @router.get("/login-logs", summary="登录日志列表", response_model=Page[response.LoginLogOut])
 async def login_log(
-    user: NeedAuthorization,
     username: str = "",
     ip_address: str = "",
     is_success: bool | None = None,
     params=Depends(Params),
+    query_sets=Depends(data_range_permission(LoginLog)),
 ):
-    query_sets = LoginLog.all()
     if username:
         query_sets = query_sets.filter(username=username)
     if ip_address:
@@ -31,14 +30,13 @@ async def login_log(
 
 @router.get("/access-logs", summary="访问日志列表", response_model=Page[response.AccessLogOut])
 async def access_log(
-    user: NeedAuthorization,
     api: str = "",
     method: str = "",
     ip_address: str = "",
     http_status_code: int | None = None,
     params=Depends(Params),
+    query_sets=Depends(data_range_permission(AccessLog)),
 ):
-    query_sets = AccessLog.all()
     if api:
         query_sets = query_sets.filter(api=api)
     if ip_address:

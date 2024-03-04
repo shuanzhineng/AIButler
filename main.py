@@ -8,6 +8,7 @@ from common.lifespan import lifespan
 from conf.routers import register_router
 from conf.settings import settings
 from fastapi_pagination import add_pagination
+from common.db_signal import registration_db_signal
 
 
 def create_app() -> FastAPI:
@@ -18,6 +19,9 @@ def create_app() -> FastAPI:
         # docs_url=None,  # 关闭自带的文档
         redoc_url=None,
     )
+
+    # 初始化tortoise-orm
+    registration_db_signal()
     # 注册中间件
     register_middleware(_app)
     # 注册路由
@@ -26,6 +30,7 @@ def create_app() -> FastAPI:
     register_custom_exception(_app)
     # https://github.com/uriyyo/fastapi-pagination 分页器用法
     add_pagination(_app)
+
     # 开启静态目录
     if settings.STATIC_FILE:
         from fastapi.staticfiles import StaticFiles

@@ -61,6 +61,13 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 7
     TOKEN_URL: str = "/account/oauth2/token"
 
+    # minio
+    MINIO_DEFAULT_BUCKET: str = ""
+    MINIO_SERVER_HOST: str = ""
+    MINIO_SERVER_PORT: str = ""
+    MINIO_ACCESS_KEY: str = ""
+    MINIO_SECRET_KEY: str = ""
+
     class Config:
         env_file = f".envs/.{ENV_FLAG}"
 

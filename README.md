@@ -8,6 +8,15 @@
 - [Loguru](https://loguru.readthedocs.io/en/stable/): 旨在为Python带来愉快的日志记录。
 - [Poetry](https://python-poetry.org/docs/): Poetry是Python中用于依赖管理和打包的工具。它允许你声明你的项目所依赖的库，它会为你管理(安装/更新)它们。Poetry提供了一个锁文件，以确保可重复安装，并可以构建您的项目以进行分发。
 
+## 问题说明
+
+tortoise-orm使用中遇到外键无法在响应中展示问题,是因为tortoise-orm要求pydantic_model_creator在Tortoise.init之前, 而我们的
+pydantic_model_creator是在注册路由时(main.register_router)通过各种路径导入进行的创建在Tortoise.init之前所以无法展示, 将register_router及app.mount
+都放到lifespan中Tortoise.init之后即可解决这个问题, 但是在使用中发现自带的外键关系处理并不好用, 项目中使用了继承pydantic_model_creator
+类的方式对外键关系结构进行重新定义以达到响应中展示外键相关数据的目的。
+
+参考链接: https://tortoise.github.io/examples/pydantic.html#main-py
+
 ## 项目结构说明
 
 - 结构由`tree -a -I "*.pyc|__pycache__|.git|.idea|.mypy_cache|logs"`命令生成

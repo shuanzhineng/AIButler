@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from apps.system.models.db import Menu, MenuAPIPermission
 from apps.system.models import request, response
-from apps.account.depends import NeedAuthorization
+from common.depends import NeedAuthorization, data_range_permission
 from common.utils import get_instance, construct_tree
 from common.enums import MenuGenreEnum
 from fastapi_pagination import Page, Params
@@ -17,23 +17,23 @@ router = APIRouter(
 
 
 @router.get("", summary="菜单列表", response_model=Page[response.QueryMenuOut])
-async def menus(user: NeedAuthorization, params=Depends(Params), parent_id: str | None = None):
+async def menus(params=Depends(Params), parent_id: str | None = None, query_sets=Depends(data_range_permission(Menu))):
     """index"""
     if not parent_id:
         parent_id = None
-    query_sets = Menu.filter(parent=parent_id, genre__in=[MenuGenreEnum.DIRECTORY, MenuGenreEnum.PAGE])
+    query_sets = query_sets.filter(parent=parent_id, genre__in=[MenuGenreEnum.DIRECTORY, MenuGenreEnum.PAGE])
     output = await paginate(query_sets, params=params)
     # 在分页结果中修改child
     for obj in output.items:
-        hava_child = bool(await Menu.filter(parent=obj.id))
+        hava_child = bool(await query_sets.filter(parent=obj.id))
         obj.child = hava_child
     return output
 
 
 @router.get("/full-tree", summary="菜单树", response_model=list[response.QueryMenuTreeOut])
-async def menu_tree(user: NeedAuthorization):
+async def menu_tree(query_sets=Depends(data_range_permission(Menu))):
     """完整菜单树"""
-    query_sets = await Menu.all().prefetch_related("parent")
+    query_sets = await query_sets.prefetch_related("parent")
     tree = construct_tree(query_sets)
     output = []
     for obj in tree:
@@ -43,12 +43,12 @@ async def menu_tree(user: NeedAuthorization):
 
 
 @router.get("/{pk}/buttons", summary="菜单按钮", response_model=Page[response.QueryButtonOut])
-async def buttons(pk: int, user: NeedAuthorization, params=Depends(Params)):
+async def buttons(pk: int, query_sets=Depends(data_range_permission(Menu)), params=Depends(Params)):
     """菜单下的按钮"""
-    query_sets = Menu.filter(parent=pk, genre=MenuGenreEnum.BUTTON)
+    query_sets = query_sets.filter(parent=pk, genre=MenuGenreEnum.BUTTON)
     output = await paginate(query_sets, params=params)
     for obj in output.items:
-        menu = await Menu.get(pk=obj.id)
+        menu = await query_sets.get(pk=obj.id)
         obj.apis = list(await menu.api_perms.all().values("method", "api"))
     return output
 
@@ -79,9 +79,11 @@ async def create_button(items: request.CreateButtonIn, user: NeedAuthorization):
 
 
 @router.put("/buttons/{pk}", summary="修改按钮", response_model=response.QueryButtonOut)
-async def put_button(pk: int, items: request.CreateButtonIn, user: NeedAuthorization):
+async def put_button(
+    pk: int, items: request.CreateButtonIn, user: NeedAuthorization, query_sets=Depends(data_range_permission(Menu))
+):
     """修改按钮"""
-    instance = await get_instance(Menu, pk)
+    instance = await get_instance(query_sets, pk)
     items = items.model_dump()
 
     @atomic()
@@ -89,7 +91,7 @@ async def put_button(pk: int, items: request.CreateButtonIn, user: NeedAuthoriza
         nonlocal instance
         apis = items.pop("apis")
         items["modifier"] = user
-        await Menu.filter(id=instance.id).update(**items)
+        await query_sets.filter(id=instance.id).update(**items)
         api_perms = await instance.api_perms.all()
         for api_perm in api_perms:
             await api_perm.delete()
@@ -97,7 +99,7 @@ async def put_button(pk: int, items: request.CreateButtonIn, user: NeedAuthoriza
         for api in apis:
             bulk_data.append(MenuAPIPermission(**api, menu=instance))
         await MenuAPIPermission.bulk_create(bulk_data)
-        instance = await get_instance(Menu, pk)
+        instance = await get_instance(query_sets, pk)
         output = dict(await response.QueryButtonOut.from_tortoise_orm(instance))
         apis = [{"method": api_perm.method.value, "api": api_perm.api} for api_perm in api_perms]
         output["apis"] = apis
@@ -108,9 +110,9 @@ async def put_button(pk: int, items: request.CreateButtonIn, user: NeedAuthoriza
 
 
 @router.delete("/buttons/{pk}", summary="删除按钮")
-async def delete_button(pk: int, user: NeedAuthorization):
+async def delete_button(pk: int, query_sets=Depends(data_range_permission(Menu))):
     """删除按钮"""
-    instance = await get_instance(Menu, pk)
+    instance = await get_instance(query_sets, pk)
 
     @atomic()
     async def _delete():
@@ -125,9 +127,9 @@ async def delete_button(pk: int, user: NeedAuthorization):
 
 
 @router.get("/{pk}", summary="菜单详情", response_model=response.MenuDetailOut)
-async def retrieve_menu(pk: int, user: NeedAuthorization):
+async def retrieve_menu(pk: int, query_sets=Depends(data_range_permission(Menu))):
     """查看菜单详情"""
-    instance = await get_instance(Menu, pk)
+    instance = await get_instance(query_sets, pk)
     output = dict(await response.MenuNoParentOut.from_tortoise_orm(instance))
     parent = await instance.parent
     output["parent"] = None
@@ -159,15 +161,17 @@ async def create_menu(user: NeedAuthorization, items: request.CreateMenuIn):
 
 
 @router.put("/{pk}", summary="修改菜单", response_model=response.MenuDetailOut)
-async def put_menu(pk: int, user: NeedAuthorization, items: request.CreateMenuIn):
+async def put_menu(
+    pk: int, user: NeedAuthorization, items: request.CreateMenuIn, query_sets=Depends(data_range_permission(Menu))
+):
     """修改菜单"""
-    instance = await get_instance(Menu, pk)
+    instance = await get_instance(query_sets, pk)
     items = items.model_dump()
     items["modifier"] = user
     parent_id = items.pop("parent_id")
-    parent = await Menu.get(id=parent_id)
-    await Menu.filter(id=instance.id).update(**items, parent=parent)
-    instance = await Menu.get(id=pk)
+    parent = await query_sets.get(id=parent_id)
+    await query_sets.filter(id=instance.id).update(**items, parent=parent)
+    instance = await query_sets.get(id=pk)
     output = dict(await response.MenuNoParentOut.from_tortoise_orm(instance))
     parent = await instance.parent
     output["parent"] = None
@@ -182,9 +186,9 @@ async def put_menu(pk: int, user: NeedAuthorization, items: request.CreateMenuIn
 
 
 @router.delete("/{pk}", summary="删除菜单")
-async def delete_menu(pk: int, user: NeedAuthorization):
+async def delete_menu(pk: int, query_sets=Depends(data_range_permission(Menu))):
     """删除菜单"""
-    instance = await get_instance(Menu, pk)
-    await Menu.filter(parent=instance).update(parent_id=None)
+    instance = await get_instance(query_sets, pk)
+    await query_sets.filter(parent=instance).update(parent_id=None)
     await instance.delete()
     return

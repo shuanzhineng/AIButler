@@ -5,7 +5,6 @@ from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from common.logger import logger
-# from apps.system.models.db import AccessLog
 
 
 class AccessLogMiddleware(BaseHTTPMiddleware):

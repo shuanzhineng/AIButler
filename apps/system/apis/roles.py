@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 from apps.system.models.db import Menu, Role, Dept
 from apps.system.models import request, response
-from apps.account.depends import NeedAuthorization
+from common.depends import NeedAuthorization, data_range_permission
 from common.utils import get_instance
 from fastapi_pagination import Page, Params
 from http import HTTPStatus
@@ -17,9 +17,13 @@ router = APIRouter(
 
 
 @router.get("", summary="角色列表", response_model=Page[response.RoleOut])
-async def roles(user: NeedAuthorization, keyword: str = "", disabled: bool | None = None, params=Depends(Params)):
+async def roles(
+    query_sets=Depends(data_range_permission(Role)),
+    keyword: str = "",
+    disabled: bool | None = None,
+    params=Depends(Params),
+):
     """角色列表"""
-    query_sets = Role.all()
     if keyword:
         query_sets = query_sets.filter(
             Q(name__icontains=keyword) | Q(key__icontains=keyword) | Q(description__icontains=keyword)
@@ -30,9 +34,9 @@ async def roles(user: NeedAuthorization, keyword: str = "", disabled: bool | Non
 
 
 @router.get("/{pk}", summary="角色详情", response_model=response.RoleOut)
-async def retrieve_role(pk: int, user: NeedAuthorization):
+async def retrieve_role(pk: int, query_sets=Depends(data_range_permission(Role))):
     """角色详情"""
-    instance = await get_instance(Role, pk)
+    instance = await get_instance(query_sets, pk)
     return instance
 
 
@@ -44,17 +48,17 @@ async def create_role(user: NeedAuthorization, items: request.CreateRoleIn):
 
 
 @router.put("/{pk}", summary="修改角色", response_model=response.RoleOut)
-async def put_role(pk: int, user: NeedAuthorization, items: request.CreateRoleIn):
+async def put_role(pk: int, items: request.CreateRoleIn, query_sets=Depends(data_range_permission(Role))):
     """修改角色"""
-    instance = await get_instance(Role, pk)
-    await Role.filter(id=instance.id).update(**items.model_dump())
+    instance = await get_instance(query_sets, pk)
+    await query_sets.filter(id=instance.id).update(**items.model_dump())
     return instance
 
 
 @router.put("/{pk}/permission", summary="修改角色权限")
-async def put_role_permission(pk: int, user: NeedAuthorization, items: request.PutRoleIn):
+async def put_role_permission(pk: int, items: request.PutRoleIn, query_sets=Depends(data_range_permission(Role))):
     """修改角色权限"""
-    instance = await get_instance(Role, pk)
+    instance = await get_instance(query_sets, pk)
     items = items.model_dump()
 
     @atomic()
@@ -77,8 +81,8 @@ async def put_role_permission(pk: int, user: NeedAuthorization, items: request.P
 
 
 @router.delete("/{pk}", summary="删除角色")
-async def delete_role(pk: int, user: NeedAuthorization):
+async def delete_role(pk: int, query_sets=Depends(data_range_permission(Role))):
     """删除角色"""
-    instance = await get_instance(Role, pk)
+    instance = await get_instance(query_sets, pk)
     await instance.delete()
     return

@@ -101,3 +101,20 @@ class LabelTaskSampleStateEnum(str, enum.Enum):
             "DONE": "已标注",
         }
         return d[key]
+
+
+class AnnotationTypeEnum(str, enum.Enum):
+    """
+    标注类型
+    """
+
+    IMAGE_CLASSIFY = "IMAGE_CLASSIFY"  # 图像分类
+    OBJECT_DETECTION = "OBJECT_DETECTION"  # 物体检测
+
+    @classmethod
+    def get_display(cls, key):
+        d = {
+            "IMAGE_CLASSIFY": "图像分类",
+            "OBJECT_DETECTION": "物体检测",
+        }
+        return d[key]

@@ -3,27 +3,13 @@ from contextlib import asynccontextmanager
 from loguru import logger
 from tortoise import Tortoise, connections
 from common.logger import init_logging
+from conf.settings import settings
+
 from common.db_signal import registration_db_signal
-from conf.settings import AERICH_TORTOISE_ORM_CONFIG, settings
-
-from typing_extensions import TypedDict
-
-
-class FakeModel:
-    @staticmethod
-    def predict():
-        return 1
-
-
-class MlModel(TypedDict):
-    fake_model: FakeModel | None
-
-
-ml_models: MlModel = {"fake_model": None}
 
 
 @asynccontextmanager
-async def lifespan(_):
+async def lifespan(app):
     """
     新版本fastapi使用该方式替代startup 和shutdown 事件
     https://fastapi.tiangolo.com/advanced/events/
@@ -32,10 +18,14 @@ async def lifespan(_):
     # startup
     init_logging()
     logger.info("项启动信号接收成功!")
-    ml_models["fake_model"] = FakeModel()
     if settings.DB_URL:
         # 初始化tortoise-orm
-        await Tortoise.init(config=AERICH_TORTOISE_ORM_CONFIG)
+        await Tortoise.init(
+            db_url=settings.DB_URL,
+            modules={
+                "models": ["aerich.models"] + settings.TORTOISE_ORM_MODELS,
+            },
+        )
         registration_db_signal()
     yield
     # shutdown
