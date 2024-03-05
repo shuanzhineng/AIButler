@@ -257,7 +257,7 @@ async def export_to_datasets(
             await f.write(xml_str)
     # 压缩为zip
     output_zip = f"static/labelu/label-{task_id}"
-    await asyncify(shutil.make_archive)(output_zip, "zip", source_dir)
+    await asyncify(shutil.make_archive)(output_zip, "zip", root_dir=source_dir)
     # 上传到minio
     year_month = get_current_time().strftime("%Y-%m")
     object_name = f"{user.username}/{year_month}/labelu/{task_id}.zip"

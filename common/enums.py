@@ -118,3 +118,24 @@ class AnnotationTypeEnum(str, enum.Enum):
             "OBJECT_DETECTION": "物体检测",
         }
         return d[key]
+
+
+class TrainStatusEnum(str, enum.Enum):
+    """
+    训练状态
+    """
+
+    WAITING = "WAITING"
+    TRAINING = "TRAINING"
+    FAILURE = "FAILURE"
+    FINISH = "FINISH"
+
+    @classmethod
+    def get_display(cls, key):
+        d = {
+            "WAITING": "等待训练",
+            "TRAINING": "训练中",
+            "FAILURE": "已失败",
+            "FINISH": "已完成",
+        }
+        return d[key]

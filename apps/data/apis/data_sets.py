@@ -99,6 +99,20 @@ async def create_data_set(
     return instance
 
 
+@router.delete("/{group_id}/data-sets/{pk}", summary="删除数据集")
+async def delete_data_set(
+    group_id: int,
+    pk: int,
+    query_sets=Depends(data_range_permission(DataSetGroup)),
+    data_set_query_sets=Depends(data_range_permission(DataSet)),
+):
+    """下载数据集"""
+    await get_instance(query_sets, group_id)
+    data_set_obj = await get_instance(data_set_query_sets, pk)
+    await data_set_obj.delete()
+    return
+
+
 @router.get("/{group_id}/data-sets/{pk}/download-url", summary="下载数据集")
 async def download_data_set(
     group_id: int,
