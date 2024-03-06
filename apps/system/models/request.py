@@ -101,3 +101,14 @@ class ChangePasswordIn(CustomBaseModel):
         if v != password:
             raise ValueError("两次输入的密码不一致!")
         return v
+
+
+class CeleryWorkerOnlineIn(CustomBaseModel):
+    name: str
+    listen_queue: str
+    concurrency: int
+    is_online: bool = True
+
+
+class CeleryWorkerOfflineIn(CustomBaseModel):
+    name: str

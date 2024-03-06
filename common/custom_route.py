@@ -20,6 +20,9 @@ NO_LOG_PATHS: list[str] = [
     r"/account/oauth2/token",
     r"/data/label-tasks/\d+?/attachments",
     r"/static/.*",
+    r"/ai-models/train-tasks/\d+?/status",
+    r"/system/celery-workers/online",
+    r"/system/celery-workers/offline",
 ]  # 登录接口和涉及文件上传和下载的接口不记录日志
 
 

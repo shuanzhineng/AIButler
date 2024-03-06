@@ -139,3 +139,24 @@ class TrainStatusEnum(str, enum.Enum):
             "FINISH": "已完成",
         }
         return d[key]
+
+
+class CeleryWorkerGenreEnum(str, enum.Enum):
+    """
+    celery worker类型
+    """
+
+    train = "train"
+    verify = "verify"
+    FAILURE = "FAILURE"
+    FINISH = "FINISH"
+
+    @classmethod
+    def get_display(cls, key):
+        d = {
+            "WAITING": "等待训练",
+            "TRAINING": "训练中",
+            "FAILURE": "已失败",
+            "FINISH": "已完成",
+        }
+        return d[key]

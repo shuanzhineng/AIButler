@@ -175,3 +175,16 @@ class LoginLog(DBBaseModel):
     class Meta:
         table = "login_log"
         table_description = "访问日志"
+
+
+class CeleryWorker(DBBaseModel):
+    """训练worker, 用于统计启动中的worker数"""
+
+    name = fields.CharField(max_length=255, description="worker名称", unique=True)
+    is_online = fields.BooleanField(description="是否在线", default=True)
+    listen_queue = fields.CharField(max_length=255, description="监听的队列")
+    concurrency = fields.IntField(description="最高并发数")
+
+    class Meta:
+        table = "celery_worker"
+        table_description = "celery worker"

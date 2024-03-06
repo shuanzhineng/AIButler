@@ -38,3 +38,8 @@ class CommonError:
         status_code = 400
         default_detail = "内部接口认证失败!"
         default_code = "20002"
+
+    class WorkerOnlineError(CustomException):
+        status_code = 400
+        default_detail = "worker上线失败!"
+        default_code = "20003"

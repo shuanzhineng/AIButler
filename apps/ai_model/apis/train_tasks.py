@@ -150,7 +150,7 @@ async def create_train_task(
 
 
 @router.put("/train-tasks/{task_id}/status", summary="修改训练任务状态", dependencies=[Depends(inner_authentication)])
-async def put_train_task_status(task_id: int, status: TrainStatusEnum = Body()):
+async def put_train_task_status(task_id: int, status: TrainStatusEnum = Body(embed=True)):
     """外部通过api修改训练任务状态"""
     await TrainTask.filter(id=task_id).update(status=status)
     return

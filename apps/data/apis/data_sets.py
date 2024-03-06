@@ -94,7 +94,7 @@ async def create_data_set(
     data_set = await DataSet.filter(data_set_group=group).order_by("-version").first()
     if data_set:
         version = data_set.version + 1
-    instance = await DataSet.create(**items, data_set_group=group, creator=user, version=version, oss_file=oss_file)
+    instance = await DataSet.create(**items, data_set_group=group, creator=user, version=version, file=oss_file)
     instance.filename = oss_file.filename
     return instance
 
@@ -123,6 +123,7 @@ async def download_data_set(
     """下载数据集"""
     await get_instance(query_sets, group_id)
     data_set_obj = await get_instance(data_set_query_sets, pk)
-    oss_path = await data_set_obj.file.path
+    file = await data_set_obj.file
+    oss_path = file.path
     presigned_download_url = minio_client.presigned_download_file(oss_path)
     return {"presigned_download_url": presigned_download_url}
