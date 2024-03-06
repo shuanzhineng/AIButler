@@ -69,6 +69,10 @@ class Settings(BaseSettings):
     MINIO_ACCESS_KEY: str = ""
     MINIO_SECRET_KEY: str = ""
 
+    INNER_AUTHENTICATION_TOKEN: str
+    # celery
+    CELERY_BROKER_URL: str | None = REDIS_URL
+
     class Config:
         env_file = f".envs/.{ENV_FLAG}"
 

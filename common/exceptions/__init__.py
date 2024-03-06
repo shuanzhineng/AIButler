@@ -33,3 +33,8 @@ class CommonError:
         status_code = 400
         default_detail = "输入的资源id不存在!"
         default_code = "20001"
+
+    class InnerAuthenticationError(CustomException):
+        status_code = 400
+        default_detail = "内部接口认证失败!"
+        default_code = "20002"

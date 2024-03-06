@@ -11,8 +11,8 @@ class TrainTaskGroup(DBBaseModel):
 
     name = fields.CharField(max_length=255, description="训练任务组名称", default="")
 
-    model_type = fields.CharEnumField(
-        AnnotationTypeEnum, max_length=255, description="数据类型", default=AnnotationTypeEnum.OBJECT_DETECTION
+    ai_model_type = fields.CharEnumField(
+        AnnotationTypeEnum, max_length=255, description="模型类型", default=AnnotationTypeEnum.OBJECT_DETECTION
     )
     description = fields.CharField(max_length=255, description="训练任务组描述", default="")
     disabled = fields.BooleanField(description="是否禁用", default=False)
