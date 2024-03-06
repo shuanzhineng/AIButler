@@ -7,11 +7,13 @@ import aiofiles  # noqa
 from http import HTTPStatus
 from apps.ai_model.models.db import TrainTaskGroup, TrainTask
 from apps.ai_model.models import request, response
-from apps.data.models.db import DataSet
+from apps.data.models.db import DataSet, OssFile
 from tortoise.functions import Count
-from common.utils import get_instance
+from common.utils import get_instance, get_current_time
 from common.enums import TrainStatusEnum
 from celery_app.tasks import train
+from common.minio_client import minio_client
+from asyncer import asyncify
 
 router = APIRouter(
     prefix="/train-task-groups",
@@ -109,11 +111,40 @@ async def create_train_task(
     group = await get_instance(query_sets, group_id)
     items = items.model_dump()
     data_set_ids = items.pop("data_set_ids")
+    base_task_id = items.pop("base_task_id")
+    base_task = await TrainTask.filter(id=base_task_id).first()
     data_sets = await DataSet.filter(id__in=data_set_ids)
-    instance = await TrainTask.create(**items, creator=user, train_task_group=group)
+    instance = await TrainTask.create(**items, creator=user, train_task_group=group, base_task=base_task)
     await instance.data_sets.add(*data_sets)
-    # TODO 异步发起训练任务
-    train.delay()
+    # 异步发起训练任务
+    data_set_urls = []
+    for data_set_obj in data_sets:
+        file = await data_set_obj.file
+        download_url = await asyncify(minio_client.presigned_download_file)(file.path)
+        data_set_urls.append(download_url)
+    pretrain_model_weight_download_url = None
+    if base_task:
+        pretrain_model_weight_download_url = await asyncify(minio_client.presigned_download_file)(
+            base_task.result_file.path
+        )
+    year_month = get_current_time().strftime("%Y-%m")
+    model_weight_oss_path = f"{user.username}/train/{year_month}/{instance.id}/result.zip"
+    train_log_oss_path = f"{user.username}/train/{year_month}/{instance.id}/train.log"
+    result_file = await OssFile.create(path=model_weight_oss_path)
+    log_file = await OssFile.create(path=train_log_oss_path)
+    instance.result_file = result_file
+    instance.log_file = log_file
+    await instance.save()
+    model_weight_upload_url = await asyncify(minio_client.presigned_upload_file)(result_file.path)
+    log_upload_url = await asyncify(minio_client.presigned_upload_file)(log_file.path)
+    train.delay(
+        train_task_id=str(instance.id),
+        data_set_urls=data_set_urls,
+        pretrain_model_weight_download_url=pretrain_model_weight_download_url,
+        train_params=items["params"],
+        model_weight_upload_url=model_weight_upload_url,
+        log_upload_url=log_upload_url,
+    )
     await instance.fetch_related("creator")
     return instance
 

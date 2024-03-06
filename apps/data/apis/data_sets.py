@@ -19,8 +19,8 @@ router = APIRouter(
 @router.get("/presigned-upload-url", summary="获取预上传url")
 async def get_presigned_upload_url(filename: str, user: NeedAuthorization):
     """标注任务列表"""
-    datetime = get_current_time().strftime("%Y-%m")
-    oss_path = f"{user.username}/{datetime}/{filename}"
+    year_month = get_current_time().strftime("%Y-%m")
+    oss_path = f"{user.username}/datasets/{year_month}/{filename}"
     file_obj = await OssFile.create(path=oss_path, filename=filename, creator=user)
 
     presigned_upload_url = await asyncify(minio_client.presigned_upload_file)(oss_path)

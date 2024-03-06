@@ -64,14 +64,12 @@ class MyMinio:
         return resp
 
     def presigned_download_file(
-        self, path: str, bucket: str = settings.MINIO_DEFAULT_BUCKET, expires=timedelta(days=1)
+        self, path: str, bucket: str = settings.MINIO_DEFAULT_BUCKET, expires=timedelta(days=7)
     ):
         """预签名下载文件"""
         return self.client.presigned_get_object(bucket, path, expires)
 
-    def presigned_upload_file(
-        self, path: str, bucket: str = settings.MINIO_DEFAULT_BUCKET, expires=timedelta(hours=10)
-    ):
+    def presigned_upload_file(self, path: str, bucket: str = settings.MINIO_DEFAULT_BUCKET, expires=timedelta(days=7)):
         """预签名上传文件文件"""
         return self.client.presigned_put_object(bucket, path, expires)
 
