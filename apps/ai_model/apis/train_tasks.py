@@ -134,10 +134,9 @@ async def create_train_task(
     log_file = await OssFile.create(path=train_log_oss_path)
     instance.result_file = result_file
     instance.log_file = log_file
-    await instance.save()
     model_weight_upload_url = await asyncify(minio_client.presigned_upload_file)(result_file.path)
     log_upload_url = await asyncify(minio_client.presigned_upload_file)(log_file.path)
-    train.delay(
+    celery_task_id = train.delay(
         train_task_id=str(instance.id),
         data_set_urls=data_set_urls,
         pretrain_model_weight_download_url=pretrain_model_weight_download_url,
@@ -145,6 +144,8 @@ async def create_train_task(
         model_weight_upload_url=model_weight_upload_url,
         log_upload_url=log_upload_url,
     )
+    instance.celery_task_id = celery_task_id
+    await instance.save()
     await instance.fetch_related("creator")
     return instance
 
@@ -152,5 +153,12 @@ async def create_train_task(
 @router.put("/train-tasks/{task_id}/status", summary="修改训练任务状态", dependencies=[Depends(inner_authentication)])
 async def put_train_task_status(task_id: int, status: TrainStatusEnum = Body(embed=True)):
     """外部通过api修改训练任务状态"""
-    await TrainTask.filter(id=task_id).update(status=status)
+    data = {}
+    if status == TrainStatusEnum.TRAINING:
+        start_datetime = get_current_time()
+        data["start_datetime"] = start_datetime
+    elif status in (TrainStatusEnum.FINISH, TrainStatusEnum.FAILURE):
+        end_datetime = get_current_time()
+        data["end_datetime"] = end_datetime
+    await TrainTask.filter(id=task_id).update(**data)
     return

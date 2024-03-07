@@ -27,6 +27,6 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
 
 async def inner_authentication(request: Request):
     authorization = request.headers.get("Authorization")
-    if authorization != settings.INNER_AUTHENTICATION_TOKEN:
+    if authorization != f"Bearer {settings.INNER_AUTHENTICATION_TOKEN}":
         raise CommonError.InnerAuthenticationError
     return

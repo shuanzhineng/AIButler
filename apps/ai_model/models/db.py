@@ -42,6 +42,7 @@ class TrainTask(DBBaseModel):
         description="训练参数",
         null=True,
     )
+    celery_task_id = fields.CharField(max_length=255, description="celery任务id", default="")
     base_task = fields.ForeignKeyField(
         "models.TrainTask", on_delete=OnDelete.NO_ACTION, description="基准任务", null=True, db_constraint=False
     )

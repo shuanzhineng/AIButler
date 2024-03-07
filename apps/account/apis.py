@@ -10,6 +10,7 @@ from common.authentication import (
 )
 from common.custom_route import CustomRoute
 
+
 router = APIRouter(
     prefix="/account", tags=["认证信息"], responses={404: {"description": "Not found"}}, route_class=CustomRoute
 )
