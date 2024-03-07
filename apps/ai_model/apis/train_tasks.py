@@ -160,5 +160,5 @@ async def put_train_task_status(task_id: int, status: TrainStatusEnum = Body(emb
     elif status in (TrainStatusEnum.FINISH, TrainStatusEnum.FAILURE):
         end_datetime = get_current_time()
         data["end_datetime"] = end_datetime
-    await TrainTask.filter(id=task_id).update(**data)
+    await TrainTask.filter(id=task_id).update(**data, status=status)
     return
