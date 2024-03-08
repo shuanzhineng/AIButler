@@ -36,6 +36,7 @@ class Settings(BaseSettings):
         "apps.system.models.db",
         "apps.data.models.db",
         "apps.ai_model.models.db",
+        "apps.application.models.db",
     ]
 
     # Redis

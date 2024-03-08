@@ -9,7 +9,7 @@ def create_celery_app():
 
     app.conf.update(
         task_routes={
-            "celery_app.tasks.train": {"queue": "train"},
+            "celery_app.tasks.pytorch_object_detection_train": {"queue": "pytorch_object_detection_train"},
         },
     )
     app.autodiscover_tasks(["celery_app.tasks"])

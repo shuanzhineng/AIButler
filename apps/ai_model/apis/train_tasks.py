@@ -10,8 +10,8 @@ from apps.ai_model.models import request, response
 from apps.data.models.db import DataSet, OssFile
 from tortoise.functions import Count
 from common.utils import get_instance, get_current_time
-from common.enums import TrainStatusEnum
-from celery_app.tasks import train
+from common.enums import TrainStatusEnum, TrainFrameworkEnum
+from celery_app.tasks import pytorch_object_detection_train
 from common.minio_client import minio_client
 from asyncer import asyncify
 
@@ -136,14 +136,16 @@ async def create_train_task(
     instance.log_file = log_file
     model_weight_upload_url = await asyncify(minio_client.presigned_upload_file)(result_file.path)
     log_upload_url = await asyncify(minio_client.presigned_upload_file)(log_file.path)
-    celery_task_id = train.delay(
-        train_task_id=str(instance.id),
-        data_set_urls=data_set_urls,
-        pretrain_model_weight_download_url=pretrain_model_weight_download_url,
-        train_params=items["params"],
-        model_weight_upload_url=model_weight_upload_url,
-        log_upload_url=log_upload_url,
-    )
+    celery_task_id = ""
+    if instance.framework == TrainFrameworkEnum.PYTORCH:
+        celery_task_id = pytorch_object_detection_train.delay(
+            train_task_id=str(instance.id),
+            data_set_urls=data_set_urls,
+            pretrain_model_weight_download_url=pretrain_model_weight_download_url,
+            train_params=items["params"],
+            model_weight_upload_url=model_weight_upload_url,
+            log_upload_url=log_upload_url,
+        )
     instance.celery_task_id = celery_task_id
     await instance.save()
     await instance.fetch_related("creator")
@@ -162,3 +164,16 @@ async def put_train_task_status(task_id: int, status: TrainStatusEnum = Body(emb
         data["end_datetime"] = end_datetime
     await TrainTask.filter(id=task_id).update(**data, status=status)
     return
+
+
+@router.get("/{group_id}/tasks", summary="训练任务列表", response_model=Page[response.TrainTaskOut])
+async def get_train_tasks(
+    group_id: int,
+    group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
+    query_sets=Depends(data_range_permission(TrainTask)),
+    params=Depends(Params),
+):
+    await get_instance(group_query_sets, group_id)
+    query_sets = query_sets.prefetch_related("creator")
+    output = await paginate(query_sets, params=params)
+    return output

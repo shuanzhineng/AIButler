@@ -141,6 +141,27 @@ class TrainStatusEnum(str, enum.Enum):
         return d[key]
 
 
+class DeployOnlineInferStatusEnum(str, enum.Enum):
+    """
+    部署在线推理服务的状态
+    """
+
+    WAITING = "WAITING"
+    DEPLOYING = "DEPLOYING"
+    FAILURE = "FAILURE"
+    FINISH = "FINISH"
+
+    @classmethod
+    def get_display(cls, key):
+        d = {
+            "WAITING": "等待部署",
+            "DEPLOYING": "部署中",
+            "FAILURE": "已失败",
+            "FINISH": "已完成",
+        }
+        return d[key]
+
+
 class CeleryWorkerGenreEnum(str, enum.Enum):
     """
     celery worker类型
@@ -160,3 +181,12 @@ class CeleryWorkerGenreEnum(str, enum.Enum):
             "FINISH": "已完成",
         }
         return d[key]
+
+
+class TrainFrameworkEnum(str, enum.Enum):
+    """
+    训练框架
+    """
+
+    PYTORCH = "PyTorch"
+    PADDLEPADDLE = "PaddlePaddle"

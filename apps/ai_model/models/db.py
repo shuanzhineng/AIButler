@@ -1,4 +1,4 @@
-from common.enums import AnnotationTypeEnum, TrainStatusEnum
+from common.enums import AnnotationTypeEnum, TrainStatusEnum, TrainFrameworkEnum
 
 from tortoise import fields
 from tortoise.fields.base import OnDelete
@@ -37,6 +37,9 @@ class TrainTask(DBBaseModel):
     description = fields.CharField(max_length=255, description="训练任务描述", default="")
     status = fields.CharEnumField(
         TrainStatusEnum, max_length=255, description="训练状态", default=TrainStatusEnum.WAITING
+    )
+    framework = fields.CharEnumField(
+        TrainFrameworkEnum, max_length=255, description="训练框架", default=TrainFrameworkEnum.PYTORCH
     )
     params = fields.JSONField(
         description="训练参数",

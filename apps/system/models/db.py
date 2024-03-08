@@ -184,6 +184,9 @@ class CeleryWorker(DBBaseModel):
     is_online = fields.BooleanField(description="是否在线", default=True)
     listen_queue = fields.CharField(max_length=255, description="监听的队列")
     concurrency = fields.IntField(description="最高并发数")
+    ip_address = fields.CharField(description="最高并发数", default="", max_length=255)
+    # 部署worker需要有可用端口才可以进行部署
+    available_ports = fields.JSONField(description="可用端口号", default=list)
 
     class Meta:
         table = "celery_worker"

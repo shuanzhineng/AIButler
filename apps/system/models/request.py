@@ -108,6 +108,8 @@ class CeleryWorkerOnlineIn(CustomBaseModel):
     listen_queue: str
     concurrency: int
     is_online: bool = True
+    ip_address: str = ""
+    available_ports: list = []
 
 
 class CeleryWorkerOfflineIn(CustomBaseModel):
