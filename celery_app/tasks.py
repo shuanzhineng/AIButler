@@ -4,6 +4,7 @@ from celery_app import celery_app
 @celery_app.task
 def pytorch_object_detection_train(
     train_task_id: str,
+    network: str,
     data_set_urls: list[str],
     train_params: dict,
     log_upload_url: str,

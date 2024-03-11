@@ -1,8 +1,352 @@
 INIT_MENU = [
     {
-        "name": "系统管理",
+        "name": "数据管理",
+        "code": "data_manage",
         "icon": "xxx",
-        "sort": 10000,
+        "sort": 20000,
+        "is_link": False,
+        "link_url": "",
+        "genre": "DIRECTORY",
+        "web_path": "",
+        "disabled": False,
+        "apis": [],
+        "children": [
+            {
+                "name": "数据标注",
+                "code": "data_manage::data_label",
+                "icon": "xxx",
+                "sort": 21000,
+                "is_link": False,
+                "link_url": "",
+                "genre": "PAGE",
+                "web_path": "",
+                "disabled": False,
+                "apis": [],
+                "children": [
+                    {
+                        "name": "查询",
+                        "code": "data_manage::data_label::query",
+                        "sort": 21100,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/data/label-tasks"},
+                        ],
+                    },
+                    {
+                        "name": "详情",
+                        "code": "data_manage::data_label::retrieve",
+                        "sort": 21200,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/data/label-tasks/{id}"},
+                            {"method": "GET", "api": "/data/label-tasks/{id}/samples/{id}"},
+                            {"method": "GET", "api": "/data/label-tasks/{id}/samples"},
+                        ],
+                    },
+                    {
+                        "name": "新增",
+                        "code": "data_manage::data_label::create",
+                        "sort": 21300,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "POST", "api": "/data/label-tasks"},
+                            {"method": "POST", "api": "/data/label-tasks/{id}/attachments"},
+                            {"method": "POST", "api": "/data/label-tasks/{id}/samples"},
+                        ],
+                    },
+                    {
+                        "name": "编辑",
+                        "code": "data_manage::data_label::edit",
+                        "sort": 21400,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "PUT", "api": "/data/label-tasks/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "删除",
+                        "code": "data_manage::data_label::delete",
+                        "sort": 21500,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "DELETE", "api": "/data/label-tasks/{id}"},
+                            {"method": "DELETE", "api": "/data/label-tasks/{id}/bulk-delete-attachments"},
+                        ],
+                    },
+                    {
+                        "name": "标注",
+                        "code": "data_manage::data_label::label",
+                        "sort": 21600,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "PUT", "api": "/data/label-tasks/{id}/samples/{id}"},
+                            {"method": "POST", "api": "/data/label-tasks/{id}/samples"},
+                            {"method": "GET", "api": "/data/label-tasks/{id}/samples"},
+                            {"method": "GET", "api": "/data/label-tasks/{id}/samples/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "导出",
+                        "code": "data_manage::data_label::export",
+                        "sort": 21700,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "POST", "api": "/data/label-tasks/{id}/samples/export-to-data-sets"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "name": "数据集",
+                "code": "data_manage::datasets",
+                "icon": "xxx",
+                "sort": 22000,
+                "is_link": False,
+                "link_url": "",
+                "genre": "PAGE",
+                "web_path": "",
+                "disabled": False,
+                "apis": [],
+                "children": [
+                    {
+                        "name": "查询",
+                        "code": "data_manage::datasets::query",
+                        "sort": 22100,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/data/data-set-groups"},
+                        ],
+                    },
+                    {
+                        "name": "详情",
+                        "code": "data_manage::datasets::retrieve",
+                        "sort": 22200,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/data/data-set-groups/{id}"},
+                            {"method": "GET", "api": "/data/data-set-groups/{id}/data-sets"},
+                            {"method": "GET", "api": "/data/data-set-groups/{id}/data-sets/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "新增",
+                        "code": "data_manage::datasets::create",
+                        "sort": 22300,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "POST", "api": "/data/data-set-groups"},
+                            {"method": "POST", "api": "/data/data-set-groups/{id}/data-sets"},
+                            {"method": "POST", "api": "/data/data-set-groups/presigned-upload-url"},
+                        ],
+                    },
+                    {
+                        "name": "编辑",
+                        "code": "data_manage::datasets::edit",
+                        "sort": 22400,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "PUT", "api": "/data/data-set-groups/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "删除",
+                        "code": "data_manage::datasets::delete",
+                        "sort": 22500,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "DELETE", "api": "/data/data-set-groups/{id}"},
+                            {"method": "DELETE", "api": "/data/data-set-groups/{id}/data-sets/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "下载",
+                        "code": "data_manage::datasets::download",
+                        "sort": 22600,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/data/data-set-groups/{id}/data-sets/{pk}/download-url"},
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        "name": "模型管理",
+        "code": "ai_model_manage",
+        "icon": "xxx",
+        "sort": 30000,
+        "is_link": False,
+        "link_url": "",
+        "genre": "DIRECTORY",
+        "web_path": "",
+        "disabled": False,
+        "apis": [],
+        "children": [
+            {
+                "name": "在线训练",
+                "code": "ai_model_manage::online_train",
+                "icon": "xxx",
+                "sort": 31000,
+                "is_link": False,
+                "link_url": "",
+                "genre": "PAGE",
+                "web_path": "",
+                "disabled": False,
+                "apis": [],
+                "children": [
+                    {
+                        "name": "查询",
+                        "code": "ai_model_manage::online_train::query",
+                        "sort": 31100,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/ai-models/train-task-groups"},
+                        ],
+                    },
+                    {
+                        "name": "详情",
+                        "code": "ai_model_manage::online_train::retrieve",
+                        "sort": 31200,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/ai-models/train-task-groups/{id}"},
+                            {"method": "GET", "api": "/ai-models/train-task-groups/{id}/tasks"},
+                        ],
+                    },
+                    {
+                        "name": "新增",
+                        "code": "ai_model_manage::online_train::create",
+                        "sort": 31300,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "POST", "api": "/ai-models/train-task-groups"},
+                            {"method": "POST", "api": "/ai-models/train-task-groups/{id}/tasks"},
+                        ],
+                    },
+                    {
+                        "name": "编辑",
+                        "code": "ai_model_manage::online_train::edit",
+                        "sort": 31400,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "PUT", "api": "/ai-models/train-task-groups/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "删除",
+                        "code": "ai_model_manage::online_train::delete",
+                        "sort": 31500,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "DELETE", "api": "/ai-models/train-task-groups/{id}"},
+                        ],
+                    },
+                ],
+            },
+        ],
+    },
+    {
+        "name": "应用管理",
+        "code": "app_manage",
+        "icon": "xxx",
+        "sort": 40000,
+        "is_link": False,
+        "link_url": "",
+        "genre": "DIRECTORY",
+        "web_path": "",
+        "disabled": False,
+        "apis": [],
+        "children": [
+            {
+                "name": "在线推理",
+                "code": "app_manage::online_infer",
+                "icon": "xxx",
+                "sort": 41000,
+                "is_link": False,
+                "link_url": "",
+                "genre": "PAGE",
+                "web_path": "",
+                "disabled": False,
+                "apis": [],
+                "children": [
+                    {
+                        "name": "查询",
+                        "code": "app_manage::online_infer::query",
+                        "sort": 41100,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/applications/deploy-online-infers"},
+                        ],
+                    },
+                    {
+                        "name": "详情",
+                        "code": "app_manage::online_infer::retrieve",
+                        "sort": 41200,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "GET", "api": "/applications/deploy-online-infers/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "新增",
+                        "code": "app_manage::online_infer::create",
+                        "sort": 41300,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "POST", "api": "/applications/deploy-online-infers"},
+                        ],
+                    },
+                    {
+                        "name": "编辑",
+                        "code": "app_manage::online_infer::edit",
+                        "sort": 41400,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "PUT", "api": "/applications/deploy-online-infers/{id}"},
+                        ],
+                    },
+                    {
+                        "name": "删除",
+                        "code": "app_manage::online_infer::delete",
+                        "sort": 41500,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "DELETE", "api": "/applications/deploy-online-infers/{id}"},
+                        ],
+                    },
+                ],
+            }
+        ],
+    },
+    {
+        "name": "系统管理",
+        "code": "system_manage",
+        "icon": "xxx",
+        "sort": 90000,
         "is_link": False,
         "link_url": "",
         "genre": "DIRECTORY",
@@ -12,8 +356,9 @@ INIT_MENU = [
         "children": [
             {
                 "name": "菜单管理",
+                "code": "system_manage::menu_manage",
                 "icon": "xxx",
-                "sort": 11000,
+                "sort": 91000,
                 "is_link": False,
                 "link_url": "",
                 "genre": "PAGE",
@@ -23,7 +368,8 @@ INIT_MENU = [
                 "children": [
                     {
                         "name": "查询",
-                        "sort": 11100,
+                        "code": "system_manage::menu_manage::query",
+                        "sort": 91100,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -34,21 +380,24 @@ INIT_MENU = [
                     },
                     {
                         "name": "详情",
-                        "sort": 11200,
+                        "code": "system_manage::menu_manage::retrieve",
+                        "sort": 91200,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "GET", "api": "/system/menus/{id}"}],
                     },
                     {
                         "name": "新增",
-                        "sort": 11300,
+                        "code": "system_manage::menu_manage::create",
+                        "sort": 91300,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "POST", "api": "/system/menus"}],
                     },
                     {
                         "name": "编辑",
-                        "sort": 11400,
+                        "code": "system_manage::menu_manage::edit",
+                        "sort": 91400,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -58,7 +407,8 @@ INIT_MENU = [
                     },
                     {
                         "name": "删除",
-                        "sort": 11500,
+                        "code": "system_manage::menu_manage::delete",
+                        "sort": 91500,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -70,8 +420,9 @@ INIT_MENU = [
             },
             {
                 "name": "角色管理",
+                "code": "system_manage::role_manage",
                 "icon": "xxx",
-                "sort": 12000,
+                "sort": 92000,
                 "is_link": False,
                 "link_url": "",
                 "genre": "PAGE",
@@ -81,7 +432,8 @@ INIT_MENU = [
                 "children": [
                     {
                         "name": "查询",
-                        "sort": 12100,
+                        "code": "system_manage::role_manage::query",
+                        "sort": 92100,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -90,21 +442,24 @@ INIT_MENU = [
                     },
                     {
                         "name": "详情",
-                        "sort": 12200,
+                        "code": "system_manage::role_manage::retrieve",
+                        "sort": 92200,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "GET", "api": "/system/roles/{id}"}],
                     },
                     {
                         "name": "新增",
-                        "sort": 12300,
+                        "code": "system_manage::role_manage::create",
+                        "sort": 92300,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "POST", "api": "/system/roles"}],
                     },
                     {
                         "name": "编辑",
-                        "sort": 12400,
+                        "code": "system_manage::role_manage::edit",
+                        "sort": 92400,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -114,7 +469,8 @@ INIT_MENU = [
                     },
                     {
                         "name": "删除",
-                        "sort": 12500,
+                        "code": "system_manage::role_manage::delete",
+                        "sort": 92500,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -125,8 +481,9 @@ INIT_MENU = [
             },
             {
                 "name": "部门管理",
+                "code": "system_manage::dept_manage",
                 "icon": "xxx",
-                "sort": 13000,
+                "sort": 93000,
                 "is_link": False,
                 "link_url": "",
                 "genre": "PAGE",
@@ -136,7 +493,8 @@ INIT_MENU = [
                 "children": [
                     {
                         "name": "查询",
-                        "sort": 13100,
+                        "code": "system_manage::dept_manage::query",
+                        "sort": 93100,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -146,21 +504,24 @@ INIT_MENU = [
                     },
                     {
                         "name": "详情",
-                        "sort": 13200,
+                        "code": "system_manage::dept_manage::retrieve",
+                        "sort": 93200,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "GET", "api": "/system/depts/{id}"}],
                     },
                     {
                         "name": "新增",
-                        "sort": 13300,
+                        "code": "system_manage::dept_manage::create",
+                        "sort": 93300,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "POST", "api": "/system/depts"}],
                     },
                     {
                         "name": "编辑",
-                        "sort": 13400,
+                        "code": "system_manage::dept_manage::edit",
+                        "sort": 93400,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -170,7 +531,8 @@ INIT_MENU = [
                     },
                     {
                         "name": "删除",
-                        "sort": 13500,
+                        "code": "system_manage::dept_manage::delete",
+                        "sort": 93500,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -181,8 +543,9 @@ INIT_MENU = [
             },
             {
                 "name": "用户管理",
+                "code": "system_manage::user_manage",
                 "icon": "xxx",
-                "sort": 14000,
+                "sort": 94000,
                 "is_link": False,
                 "link_url": "",
                 "genre": "PAGE",
@@ -191,28 +554,32 @@ INIT_MENU = [
                 "children": [
                     {
                         "name": "查询",
-                        "sort": 13100,
+                        "code": "system_manage::user_manage::query",
+                        "sort": 93100,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "GET", "api": "/system/users"}],
                     },
                     {
                         "name": "详情",
-                        "sort": 13200,
+                        "code": "system_manage::user_manage::retrieve",
+                        "sort": 93200,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "GET", "api": "/system/users/{id}"}],
                     },
                     {
                         "name": "新增",
-                        "sort": 13300,
+                        "code": "system_manage::user_manage::create",
+                        "sort": 93300,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [{"method": "POST", "api": "/system/users"}],
                     },
                     {
                         "name": "编辑",
-                        "sort": 13400,
+                        "code": "system_manage::user_manage::edit",
+                        "sort": 93400,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -222,7 +589,8 @@ INIT_MENU = [
                     },
                     {
                         "name": "删除",
-                        "sort": 13500,
+                        "code": "system_manage::user_manage::delete",
+                        "sort": 93500,
                         "genre": "BUTTON",
                         "disabled": False,
                         "apis": [
@@ -232,5 +600,5 @@ INIT_MENU = [
                 ],
             },
         ],
-    }
+    },
 ]

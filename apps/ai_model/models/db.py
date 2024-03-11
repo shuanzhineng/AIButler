@@ -41,6 +41,7 @@ class TrainTask(DBBaseModel):
     framework = fields.CharEnumField(
         TrainFrameworkEnum, max_length=255, description="训练框架", default=TrainFrameworkEnum.PYTORCH
     )
+    network = fields.CharField(max_length=255, description="模型网络", default="")
     params = fields.JSONField(
         description="训练参数",
         null=True,

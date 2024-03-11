@@ -20,6 +20,7 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
 
     async def inner(user: User = Depends(need_access_token)) -> QuerySet:
         # roles = await user.roles.all()
+        # TODO 增加角色权限过滤
         return model_class.all()
 
     return inner

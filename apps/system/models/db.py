@@ -78,6 +78,7 @@ class Menu(DBBaseModel):
     """菜单"""
 
     name = fields.CharField(max_length=255, description="菜单名称")
+    code = fields.CharField(max_length=255, description="菜单代码", unique=True)
     icon = fields.CharField(max_length=255, description="图标代码", default="")
     sort = fields.IntField(description="排序号", default=1)
     is_link = fields.BooleanField(default=False, description="是否外链")

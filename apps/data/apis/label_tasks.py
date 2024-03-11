@@ -183,7 +183,7 @@ async def retrieve_label_sample(
     return instance
 
 
-@router.patch("/{task_id}/samples/{sample_id}", summary="标注样本详情", response_model=response.LabelTaskSampleOut)
+@router.patch("/{task_id}/samples/{sample_id}", summary="修改标注", response_model=response.LabelTaskSampleOut)
 async def patch_label_sample(
     task_id: int,
     sample_id: int,

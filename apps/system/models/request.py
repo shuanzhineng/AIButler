@@ -10,6 +10,7 @@ class CreateMenuIn(CustomBaseModel):
     """创建菜单请求体参数"""
 
     name: str = Field(min_length=1, max_length=30)
+    code: str = Field(min_length=1, max_length=30)
     icon: str = Field(min_length=0, max_length=30)
     web_path: str = Field(min_length=0, max_length=255)
     sort: int = Field(ge=0)
@@ -27,6 +28,7 @@ class API(TypedDict):
 
 class CreateButtonIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=30)
+    code: str = Field(min_length=1, max_length=30)
     sort: int = Field(ge=0)
     disabled: bool = False
     apis: list[API] = []
