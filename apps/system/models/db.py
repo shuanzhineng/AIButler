@@ -154,6 +154,7 @@ class AccessLog(DBBaseModel):
     ip_address = fields.CharField(max_length=255, description="ip地址", default="")
     browser = fields.CharField(max_length=255, description="浏览器信息", default="")
     os = fields.CharField(max_length=255, description="操作系统信息", default="")
+    user_agent = fields.CharField(max_length=255, description="请求头中的user_agent", default="")
     http_status_code = fields.IntField(description="http状态码", default=0)
     request_body = fields.TextField(default="", description="请求体")
     response_body = fields.TextField(default="", description="响应体")
@@ -172,6 +173,7 @@ class LoginLog(DBBaseModel):
     os = fields.CharField(max_length=255, description="操作系统信息", default="")
     http_status_code = fields.IntField(description="http状态码", default=0)
     is_success = fields.BooleanField(description="是否成功", default=False)
+    user_agent = fields.CharField(max_length=255, description="请求头中的user_agent", default="")
 
     class Meta:
         table = "login_log"
