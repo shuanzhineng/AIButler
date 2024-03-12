@@ -35,8 +35,8 @@ class CustomRoute(APIRoute):
         async def custom_route_handler(request: Request) -> Response:
             response: Response = await original_route_handler(request)
             response_body = response.body
-            user_agent = request.headers["user-agent"]
-            parsed_user_agent = Parse(user_agent)
+            raw_user_agent = request.headers["user-agent"]
+            parsed_user_agent = Parse(raw_user_agent)
             user_agent = parsed_user_agent["user_agent"]
             os_info = parsed_user_agent["os"]
             browser = ""
@@ -59,7 +59,7 @@ class CustomRoute(APIRoute):
                     ip_address=request.client.host,
                     browser=browser,
                     os=os,
-                    user_agent=user_agent,
+                    user_agent=raw_user_agent,
                     http_status_code=response.status_code,
                     is_success=True if response.status_code == 200 else False,
                 )
@@ -82,7 +82,7 @@ class CustomRoute(APIRoute):
                 ip_address=request.client.host,
                 browser=browser,
                 os=os,
-                user_agent=user_agent,
+                user_agent=raw_user_agent,
                 http_status_code=response.status_code,
                 request_body=request_body.decode(),
                 response_body=response_body.decode(),
