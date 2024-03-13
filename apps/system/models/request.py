@@ -38,7 +38,7 @@ class CreateRoleIn(CustomBaseModel):
     """创建角色请求体参数"""
 
     name: str = Field(min_length=1, max_length=30)
-    key: str = Field(min_length=0, max_length=30)
+    code: str = Field(min_length=0, max_length=30)
     disabled: bool = False
     sort: int = Field(ge=0)
     description: str = Field(min_length=0, max_length=200)
@@ -63,7 +63,7 @@ class CreateDeptIn(CustomBaseModel):
     """创建部门请求体参数"""
 
     name: str = Field(min_length=1, max_length=30)
-    key: str = Field(min_length=0, max_length=30)
+    code: str = Field(min_length=0, max_length=30)
     owner: str = Field(min_length=1, max_length=30)
     phone: str = Field(min_length=11, max_length=11, pattern=r"^1\d{10}$")
     email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])

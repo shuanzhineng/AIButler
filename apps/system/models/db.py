@@ -57,7 +57,7 @@ class Dept(DBBaseModel):
     """部门"""
 
     name = fields.CharField(max_length=255, description="部门名称")
-    key = fields.CharField(max_length=255, description="关联字符", default="")
+    code = fields.CharField(max_length=255, description="关联字符", default="")
     owner = fields.CharField(max_length=255, description="负责人")
     phone = fields.CharField(max_length=255, description="手机号")
     email = fields.CharField(max_length=255, description="邮箱")
@@ -101,7 +101,7 @@ class Role(DBBaseModel):
     """角色"""
 
     name = fields.CharField(max_length=255, description="角色名称")
-    key = fields.CharField(max_length=255, description="权限字符", default="")
+    code = fields.CharField(max_length=255, description="权限字符", default="")
     disabled = fields.BooleanField(description="是否禁用", default=False)
     sort = fields.IntField(description="排序号", default=1)
     description = fields.CharField(max_length=255, description="角色描述")
