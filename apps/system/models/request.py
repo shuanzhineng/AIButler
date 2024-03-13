@@ -12,11 +12,11 @@ class CreateMenuIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=30)
     code: str = Field(min_length=1, max_length=30)
     icon: str = Field(min_length=0, max_length=30)
-    web_path: str = Field(min_length=0, max_length=255)
+    web_path: str = Field(min_length=0, max_length=255, default="")
     sort: int = Field(ge=0)
     is_link: bool = False
     disabled: bool = False
-    link_url: str = Field(min_length=0, max_length=255)
+    link_url: str = Field(min_length=0, max_length=255, default="")
     genre: MenuGenreEnum
     parent_id: int | None = None
 
