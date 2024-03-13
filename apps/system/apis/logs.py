@@ -4,7 +4,8 @@ from apps.system.models import response
 from common.depends import data_range_permission
 from fastapi_pagination import Page, Params, paginate
 from common.custom_route import CustomRoute
-from typing import Optional
+from typing import Literal
+
 
 router = APIRouter(
     prefix="/logs", tags=["日志管理"], responses={404: {"description": "Not found"}}, route_class=CustomRoute
@@ -15,14 +16,14 @@ router = APIRouter(
 async def login_log(
     username: str = "",
     ip_address: str = "",
-    is_success: Optional[bool] = None,
+    is_success: bool | None = None,
     params=Depends(Params),
     query_sets=Depends(data_range_permission(LoginLog)),
 ):
     if username:
         query_sets = query_sets.filter(username__contains=username)
     if ip_address:
-        query_sets = query_sets.filter(ip_addres__containss=ip_address)
+        query_sets = query_sets.filter(ip_addres__contains=ip_address)
     if is_success is not None:
         query_sets = query_sets.filter(is_success=is_success)
     query_sets = await query_sets
@@ -32,8 +33,8 @@ async def login_log(
 @router.get("/access-logs", summary="访问日志列表", response_model=Page[response.AccessLogOut])
 async def access_log(
     api: str = "",
-    method: str = "",
     ip_address: str = "",
+    method: Literal["GET", "POST", "PUT", "PATCH", "DELETE"] | None = None,
     http_status_code: int | None = None,
     params=Depends(Params),
     query_sets=Depends(data_range_permission(AccessLog)),

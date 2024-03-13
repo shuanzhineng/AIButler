@@ -3,7 +3,7 @@ from pydantic import field_validator
 from typing import Literal
 from typing_extensions import TypedDict
 from apps.system.models.db import Menu, Role, Dept, User, LoginLog, AccessLog
-from common.enums import MenuGenreEnum
+from common.enums import MenuGenreEnum, DataScopeEnum
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
 # ---------------------菜单model------------------------
@@ -72,7 +72,16 @@ _RoleOut = pydantic_model_creator(Role, name="_RoleOut", model_config=custom_bas
 
 
 class RoleOut(_RoleOut):  # type: ignore
-    pass
+    data_range: dict[str, str | int] | int
+
+    @field_validator(
+        "data_range",
+    )
+    @classmethod
+    def change_genre(cls, v):
+        if not isinstance(v, dict):
+            return {"name": DataScopeEnum.get_display(v), "value": v}
+        return v
 
 
 # ---------------------部门model------------------------

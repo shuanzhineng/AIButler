@@ -76,8 +76,12 @@ class CustomRoute(APIRoute):
                 payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
                 user_id = payload.get("user_id")
                 user = await User.filter(id=user_id).first()
+            if request.url.query:
+                api = request.url.path + "?" + request.url.query
+            else:
+                api = request.url.path
             await AccessLog.create(
-                api=request.url.path + "?" + request.url.query,
+                api=api,
                 method=request.method,
                 ip_address=request.client.host,
                 browser=browser,
