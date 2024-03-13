@@ -26,7 +26,7 @@ async def roles(
     """角色列表"""
     if keyword:
         query_sets = query_sets.filter(
-            Q(name__icontains=keyword) | Q(key__icontains=keyword) | Q(description__icontains=keyword)
+            Q(name__icontains=keyword) | Q(code__icontains=keyword) | Q(description__icontains=keyword)
         )
     if disabled is not None:
         query_sets = query_sets.filter(disabled=disabled)
