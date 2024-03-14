@@ -92,6 +92,7 @@ async def put_button(
     async def _patch():
         nonlocal instance
         apis = items.pop("apis")
+        items.pop("parent_id")
         items["modifier"] = user
         await query_sets.filter(id=instance.id).update(**items)
         api_perms = await instance.api_perms.all()
