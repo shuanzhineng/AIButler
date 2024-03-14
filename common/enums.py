@@ -22,11 +22,11 @@ class DataScopeEnum(enum.IntEnum):
     @classmethod
     def get_display(cls, key):
         d = {
-            0: "仅本人数据权限",
-            1: "本部门数据权限",
-            2: "本部门及以下数据权限",
-            3: "自定义数据权限",
-            4: "全部数据权限",
+            0: "仅自己",
+            1: "本部门",
+            2: "本部门及下级部门",
+            3: "自定义",
+            99: "全部",
         }
         return d[key]
 

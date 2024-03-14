@@ -30,6 +30,7 @@ class CreateButtonIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=30)
     code: str = Field(min_length=1, max_length=30)
     sort: int = Field(ge=0)
+    parent_id: int | None = None
     disabled: bool = False
     apis: list[API] = []
 

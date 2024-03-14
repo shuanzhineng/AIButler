@@ -20,6 +20,7 @@ router = APIRouter(
 async def roles(
     query_sets=Depends(data_range_permission(Role)),
     keyword: str = "",
+    name: str = "",
     disabled: bool | None = None,
     params=Depends(Params),
 ):
@@ -28,6 +29,8 @@ async def roles(
         query_sets = query_sets.filter(
             Q(name__icontains=keyword) | Q(code__icontains=keyword) | Q(description__icontains=keyword)
         )
+    if name:
+        query_sets = query_sets.filter(name=name)
     if disabled is not None:
         query_sets = query_sets.filter(disabled=disabled)
     return await paginate(query_sets, params=params)
