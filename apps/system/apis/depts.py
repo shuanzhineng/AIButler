@@ -40,7 +40,7 @@ async def unfold_depts(
     if keyword:
         query_sets = query_sets.filter(
             Q(name__icontains=keyword)
-            | Q(key__icontains=keyword)
+            | Q(code__icontains=keyword)
             | Q(owner__icontains=keyword)
             | Q(phone__icontains=keyword)
             | Q(email__icontains=keyword)
