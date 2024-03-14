@@ -17,7 +17,7 @@ class DataScopeEnum(enum.IntEnum):
     ONLY_DEPARTMENT = 1
     SELF_AND_SUBORDINATES = 2
     CUSTOM = 3
-    ALL = 4
+    ALL = 99
 
     @classmethod
     def get_display(cls, key):
