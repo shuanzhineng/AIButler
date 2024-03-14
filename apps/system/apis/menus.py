@@ -55,7 +55,7 @@ async def buttons(pk: int, query_sets=Depends(data_range_permission(Menu)), para
 
 @router.post("/buttons", summary="新增按钮", response_model=response.QueryButtonOut)
 async def create_button(items: request.CreateButtonIn, user: NeedAuthorization):
-    """修改按钮"""
+    """创建按钮"""
     items = items.model_dump()
 
     @atomic()
@@ -64,7 +64,7 @@ async def create_button(items: request.CreateButtonIn, user: NeedAuthorization):
         parent_id = items.pop("parent_id")
         parent = await Menu.filter(id=parent_id).first()
         items["modifier"] = user
-        instance = await Menu.create(**items, parent=parent)
+        instance = await Menu.create(**items, parent=parent, genre=MenuGenreEnum.BUTTON)
 
         bulk_data = []
         for api in apis:
