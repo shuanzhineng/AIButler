@@ -36,10 +36,14 @@ async def roles(
     return await paginate(query_sets, params=params)
 
 
-@router.get("/{pk}", summary="角色详情", response_model=response.RoleOut)
+@router.get("/{pk}", summary="角色详情", response_model=response.RoleDetailsOut)
 async def retrieve_role(pk: int, query_sets=Depends(data_range_permission(Role))):
     """角色详情"""
     instance = await get_instance(query_sets, pk)
+    menus = await instance.menus
+    depts = await instance.depts
+    instance.menu_ids = [m.id for m in menus]
+    instance.dept_ids = [m.id for m in depts]
     return instance
 
 

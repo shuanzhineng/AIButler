@@ -86,6 +86,21 @@ class RoleOut(_RoleOut):  # type: ignore
         return v
 
 
+class RoleDetailsOut(_RoleOut):  # type: ignore
+    data_range: dict[str, str | int] | int
+    menu_ids: list = []
+    dept_ids: list = []
+
+    @field_validator(
+        "data_range",
+    )
+    @classmethod
+    def change_genre(cls, v):
+        if not isinstance(v, dict):
+            return {"name": DataScopeEnum.get_display(v), "value": v}
+        return v
+
+
 # ---------------------部门model------------------------
 
 _DeptNoParentOut = pydantic_model_creator(
