@@ -47,12 +47,14 @@ class MenuDetailOut(MenuNoParentOut):
 class QueryMenuOut(MenuNoParentOut):
     """查询菜单响应体参数"""
 
+    parent_id: str | int | None
     child: bool = False
 
 
 class QueryMenuTreeOut(MenuNoParentOut):
     """查询菜单树响应体参数"""
 
+    parent_id: str | int | None
     children: list["QueryMenuTreeOut"] = []
 
 
@@ -98,6 +100,7 @@ class DeptNoParentOut(_DeptNoParentOut):  # type: ignore
 class QueryDeptOut(DeptNoParentOut):
     """查询菜单响应体参数"""
 
+    parent_id: str | int | None
     child: bool = False
 
 
@@ -108,6 +111,7 @@ class DeptDetailOut(DeptNoParentOut):
 class QueryDeptTreeOut(DeptNoParentOut):
     """查询菜单树响应体参数"""
 
+    parent_id: str | int | None
     children: list["QueryDeptTreeOut"] = []
 
 

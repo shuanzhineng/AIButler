@@ -32,6 +32,7 @@ async def depts(query_sets=Depends(data_range_permission(Dept)), parent_id: str 
 async def unfold_depts(
     query_sets=Depends(data_range_permission(Dept)),
     keyword: str = "",
+    name: str = "",
     disabled: bool | None = None,
     params=Depends(Params),
 ):
@@ -45,6 +46,8 @@ async def unfold_depts(
             | Q(email__icontains=keyword)
             | Q(description__icontains=keyword)
         )
+    if name:
+        query_sets = query_sets.filter(name=name)
     if disabled is not None:
         query_sets = query_sets.filter(disabled=disabled)
     output = await paginate(query_sets, params=params)

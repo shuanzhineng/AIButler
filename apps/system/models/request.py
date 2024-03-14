@@ -64,7 +64,7 @@ class CreateDeptIn(CustomBaseModel):
     """创建部门请求体参数"""
 
     name: str = Field(min_length=1, max_length=30)
-    code: str = Field(min_length=0, max_length=30)
+    code: str = Field(min_length=0, max_length=30, default="")
     owner: str = Field(min_length=1, max_length=30)
     phone: str = Field(min_length=11, max_length=11, pattern=r"^1\d{10}$")
     email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])
