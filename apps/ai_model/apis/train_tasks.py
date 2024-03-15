@@ -138,7 +138,7 @@ async def create_train_task(
     instance.log_file = log_file
     model_weight_upload_url = await asyncify(minio_client.presigned_upload_file)(result_file.path)
     log_upload_url = await asyncify(minio_client.presigned_upload_file)(log_file.path)
-    celery_task_id = ""
+    celery_task = None
     if instance.framework == TrainFrameworkEnum.PYTORCH:
         pytorch_object_detection_train_params = {
             "train_task_id": str(instance.id),
@@ -150,9 +150,9 @@ async def create_train_task(
             "log_upload_url": log_upload_url,
         }
         logger.info(f"发起异步训练: {pytorch_object_detection_train_params}")
-        celery_task_id = pytorch_object_detection_train.delay(**pytorch_object_detection_train_params)
-    if celery_task_id:
-        instance.celery_task_id = celery_task_id
+        celery_task = pytorch_object_detection_train.delay(**pytorch_object_detection_train_params)
+    if celery_task:
+        instance.celery_task_id = str(celery_task.id)
     await instance.save()
     await instance.fetch_related("creator")
     return instance
