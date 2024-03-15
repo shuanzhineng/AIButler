@@ -151,7 +151,8 @@ async def create_train_task(
         }
         logger.info(f"发起异步训练: {pytorch_object_detection_train_params}")
         celery_task_id = pytorch_object_detection_train.delay(**pytorch_object_detection_train_params)
-    instance.celery_task_id = celery_task_id
+    if celery_task_id:
+        instance.celery_task_id = celery_task_id
     await instance.save()
     await instance.fetch_related("creator")
     return instance
