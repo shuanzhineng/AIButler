@@ -14,6 +14,7 @@ from common.enums import TrainStatusEnum, TrainFrameworkEnum
 from celery_app.tasks import pytorch_object_detection_train
 from common.minio_client import minio_client
 from asyncer import asyncify
+from loguru import logger
 
 router = APIRouter(
     prefix="/train-task-groups",
@@ -112,6 +113,7 @@ async def create_train_task(
     items = items.model_dump()
     data_set_ids = items.pop("data_set_ids")
     base_task_id = items.pop("base_task_id")
+    items.pop("ai_model_type")
     base_task = await TrainTask.filter(id=base_task_id).first()
     data_sets = await DataSet.filter(id__in=data_set_ids)
     instance = await TrainTask.create(**items, creator=user, train_task_group=group, base_task=base_task)
@@ -138,14 +140,17 @@ async def create_train_task(
     log_upload_url = await asyncify(minio_client.presigned_upload_file)(log_file.path)
     celery_task_id = ""
     if instance.framework == TrainFrameworkEnum.PYTORCH:
-        celery_task_id = pytorch_object_detection_train.delay(
-            train_task_id=str(instance.id),
-            data_set_urls=data_set_urls,
-            pretrain_model_weight_download_url=pretrain_model_weight_download_url,
-            train_params=items["params"],
-            model_weight_upload_url=model_weight_upload_url,
-            log_upload_url=log_upload_url,
-        )
+        pytorch_object_detection_train_params = {
+            "train_task_id": str(instance.id),
+            "network": instance.network,
+            "data_set_urls": data_set_urls,
+            "pretrain_model_weight_download_url": pretrain_model_weight_download_url,
+            "train_params": items["params"],
+            "model_weight_upload_url": model_weight_upload_url,
+            "log_upload_url": log_upload_url,
+        }
+        logger.info(f"发起异步训练: {pytorch_object_detection_train_params}")
+        celery_task_id = pytorch_object_detection_train.delay(**pytorch_object_detection_train_params)
     instance.celery_task_id = celery_task_id
     await instance.save()
     await instance.fetch_related("creator")
