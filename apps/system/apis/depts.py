@@ -81,7 +81,7 @@ async def create_dept(user: NeedAuthorization, items: request.CreateDeptIn):
     return instance
 
 
-@router.put("/{pk}", summary="修改部门", response_model=response.DeptNoParentOut)
+@router.put("/{pk}", summary="修改部门", response_model=response.DeptDetailOut)
 async def put_dept(
     pk: int, user: NeedAuthorization, items: request.CreateDeptIn, query_sets=Depends(data_range_permission(Dept))
 ):
