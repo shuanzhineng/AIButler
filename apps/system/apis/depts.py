@@ -71,34 +71,14 @@ async def dept_tree(query_sets=Depends(data_range_permission(Dept))):
 async def retrieve_dept(pk: int, query_sets=Depends(data_range_permission(Dept))):
     """部门详情"""
     instance = await get_instance(query_sets, pk)
-    output = dict(await response.DeptNoParentOut.from_tortoise_orm(instance))
-    parent = await instance.parent
-    output["parent"] = None
-    while parent:
-        if parent:
-            output["parent"] = await response.DeptNoParentOut.from_tortoise_orm(parent)
-            parent = await parent.parent
-        else:
-            output["parent"] = None
-            break
-    return output
+    return instance
 
 
 @router.post("", summary="创建部门", response_model=response.DeptDetailOut, status_code=HTTPStatus.CREATED)
 async def create_dept(user: NeedAuthorization, items: request.CreateDeptIn):
     """创建部门"""
     instance = await Dept.create(**items.model_dump(), creator=user)
-    output = dict(await response.DeptNoParentOut.from_tortoise_orm(instance))
-    parent = await instance.parent
-    output["parent"] = None
-    while parent:
-        if parent:
-            output["parent"] = dict(await response.DeptNoParentOut.from_tortoise_orm(parent))
-            parent = await parent.parent
-        else:
-            output["parent"] = None
-            break
-    return output
+    return instance
 
 
 @router.put("/{pk}", summary="修改部门", response_model=response.DeptNoParentOut)
@@ -110,16 +90,6 @@ async def put_dept(
     modifier = user
     await query_sets.filter(id=instance.id).update(**items.model_dump(), modifier=modifier)
     instance = await query_sets.get(id=pk)
-    output = dict(await response.DeptNoParentOut.from_tortoise_orm(instance))
-    parent = await instance.parent
-    output["parent"] = None
-    while parent:
-        if parent:
-            output["parent"] = dict(await response.DeptNoParentOut.from_tortoise_orm(parent))
-            parent = await parent.parent
-        else:
-            output["parent"] = None
-            break
     return instance
 
 

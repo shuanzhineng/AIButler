@@ -133,34 +133,14 @@ async def delete_button(pk: int, query_sets=Depends(data_range_permission(Menu))
 async def retrieve_menu(pk: int, query_sets=Depends(data_range_permission(Menu))):
     """查看菜单详情"""
     instance = await get_instance(query_sets, pk)
-    output = dict(await response.MenuNoParentOut.from_tortoise_orm(instance))
-    parent = await instance.parent
-    output["parent"] = None
-    while parent:
-        if parent:
-            output["parent"] = dict(await response.MenuNoParentOut.from_tortoise_orm(parent))
-            parent = await parent.parent
-        else:
-            output["parent"] = None
-            break
-    return output
+    return instance
 
 
 @router.post("", summary="创建菜单", response_model=response.MenuDetailOut, status_code=HTTPStatus.CREATED)
 async def create_menu(user: NeedAuthorization, items: request.CreateMenuIn):
     """创建菜单"""
     instance = await Menu.create(**items.model_dump(), creator=user)
-    output = dict(await response.MenuNoParentOut.from_tortoise_orm(instance))
-    parent = await instance.parent
-    output["parent"] = None
-    while parent:
-        if parent:
-            output["parent"] = dict(await response.MenuNoParentOut.from_tortoise_orm(parent))
-            parent = await parent.parent
-        else:
-            output["parent"] = None
-            break
-    return output
+    return instance
 
 
 @router.put("/{pk}", summary="修改菜单", response_model=response.MenuDetailOut)
@@ -175,17 +155,7 @@ async def put_menu(
     parent = await query_sets.get(id=parent_id)
     await query_sets.filter(id=instance.id).update(**items, parent=parent)
     instance = await query_sets.get(id=pk)
-    output = dict(await response.MenuNoParentOut.from_tortoise_orm(instance))
-    parent = await instance.parent
-    output["parent"] = None
-    while parent:
-        if parent:
-            output["parent"] = dict(await response.MenuNoParentOut.from_tortoise_orm(parent))
-            parent = await parent.parent
-        else:
-            output["parent"] = None
-            break
-    return output
+    return instance
 
 
 @router.delete("/{pk}", summary="删除菜单")

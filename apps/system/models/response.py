@@ -41,7 +41,7 @@ class MenuNoParentOut(_MenuNoParentOut):  # type: ignore
 class MenuDetailOut(MenuNoParentOut):
     """创建菜单响应体参数"""
 
-    parent: dict | None
+    parent_id: int | None = None
 
 
 class QueryMenuOut(MenuNoParentOut):
@@ -120,7 +120,7 @@ class QueryDeptOut(DeptNoParentOut):
 
 
 class DeptDetailOut(DeptNoParentOut):
-    parent: dict | None = None
+    parent_id: int | None = None
 
 
 class QueryDeptTreeOut(DeptNoParentOut):
