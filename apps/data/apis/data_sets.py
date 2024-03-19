@@ -79,6 +79,19 @@ async def delete_data_set_group(pk: int, query_sets=Depends(data_range_permissio
     return
 
 
+@router.get("/{group_id}/data-sets", summary="创建数据集", response_model=Page[response.DataSetOut])
+async def get_data_sets(
+    group_id: int,
+    query_sets=Depends(data_range_permission(DataSetGroup)),
+    data_set_query_sets=Depends(data_range_permission(DataSet)),
+    params=Depends(Params),
+):
+    """创建数据集"""
+    group = await get_instance(query_sets, group_id)
+    data_set_query_sets = await data_set_query_sets.filter(data_set_group=group)
+    return await paginate(data_set_query_sets, params=params)
+
+
 @router.post("/{group_id}/data-sets", summary="创建数据集", response_model=response.DataSetOut)
 async def create_data_set(
     group_id: int,
