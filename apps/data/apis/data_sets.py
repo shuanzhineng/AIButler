@@ -88,7 +88,7 @@ async def get_data_sets(
 ):
     """创建数据集"""
     group = await get_instance(query_sets, group_id)
-    data_set_query_sets = await data_set_query_sets.filter(data_set_group=group)
+    data_set_query_sets = data_set_query_sets.filter(data_set_group=group)
     return await paginate(data_set_query_sets, params=params)
 
 
