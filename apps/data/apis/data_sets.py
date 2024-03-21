@@ -88,8 +88,9 @@ async def get_data_sets(
 ):
     """创建数据集"""
     group = await get_instance(query_sets, group_id)
-    data_set_query_sets = data_set_query_sets.filter(data_set_group=group)
-    return await paginate(data_set_query_sets, params=params)
+    data_set_query_sets = data_set_query_sets.filter(data_set_group=group).prefetch_related("file")
+    output = await paginate(data_set_query_sets, params=params)
+    return output
 
 
 @router.post("/{group_id}/data-sets", summary="创建数据集", response_model=response.DataSetOut)

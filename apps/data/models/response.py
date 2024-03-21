@@ -1,6 +1,6 @@
 import json
 
-from common.base_pydantic import CreatorOut, custom_base_model_config
+from common.base_pydantic import CreatorOut, custom_base_model_config, CustomBaseModel
 from pydantic import field_validator
 from apps.data.models.db import LabelTask, LabelTaskSample, DataSet, DataSetGroup
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
@@ -60,5 +60,10 @@ _DataSetOut = pydantic_model_creator(
 )
 
 
+class OssFile(CustomBaseModel):
+    id: int
+    filename: str
+
+
 class DataSetOut(_DataSetOut):  # type: ignore
-    filename: str = ""
+    file: OssFile | None = None
