@@ -70,7 +70,7 @@ async def retrieve_train_task_group(
 @router.put("/{pk}", summary="修改训练任务组", response_model=response.TrainTaskGroupOut)
 async def put_train_task_group(
     pk: int,
-    items: request.PutTrainTaskGroupIn,
+    items: request.TrainTaskGroupIn,
     user: NeedAuthorization,
     query_sets=Depends(data_range_permission(TrainTaskGroup)),
 ):
@@ -179,7 +179,20 @@ async def get_train_tasks(
     query_sets=Depends(data_range_permission(TrainTask)),
     params=Depends(Params),
 ):
-    await get_instance(group_query_sets, group_id)
-    query_sets = query_sets.prefetch_related("creator")
+    group = await get_instance(group_query_sets, group_id)
+    query_sets = query_sets.filter(train_task_group=group).prefetch_related("creator")
     output = await paginate(query_sets, params=params)
     return output
+
+
+@router.get("/{group_id}/tasks/{pk}", summary="训练任务详情", response_model=response.TrainTaskOut)
+async def get_train_task_detail(
+    group_id: int,
+    pk: int,
+    group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
+    query_sets=Depends(data_range_permission(TrainTask)),
+):
+    group = await get_instance(group_query_sets, group_id)
+    instance = await query_sets.filter(train_task_group=group, id=pk)
+    await instance.fetch_related("creator")
+    return instance
