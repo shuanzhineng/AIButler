@@ -192,7 +192,7 @@ async def get_train_task_detail(
     group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
     query_sets=Depends(data_range_permission(TrainTask)),
 ):
-    group = await get_instance(group_query_sets, group_id)
-    instance = await query_sets.filter(train_task_group=group, id=pk)
+    await get_instance(group_query_sets, group_id)
+    instance = await get_instance(query_sets, pk)
     await instance.fetch_related("creator")
     return instance
