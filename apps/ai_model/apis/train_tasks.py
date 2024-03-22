@@ -44,6 +44,9 @@ async def get_train_task_groups(query_sets=Depends(data_range_permission(TrainTa
             .values_list("status", "status_count")
         )
         task_count_stat = {status: count for status, count in counts}
+        for status in TrainStatusEnum:
+            if status.value not in task_count_stat:
+                task_count_stat[status.value] = 0
         item.task_count_stat = task_count_stat
     return output
 
@@ -63,6 +66,9 @@ async def retrieve_train_task_group(
         .values_list("status", "status_count")
     )
     task_count_stat = {status: count for status, count in counts}
+    for status in TrainStatusEnum:
+        if status.value not in task_count_stat:
+            task_count_stat[status.value] = 0
     instance.task_count_stat = task_count_stat
     return instance
 
@@ -86,6 +92,9 @@ async def put_train_task_group(
         .values_list("status", "status_count")
     )
     task_count_stat = {status: count for status, count in counts}
+    for status in TrainStatusEnum:
+        if status.value not in task_count_stat:
+            task_count_stat[status.value] = 0
     instance.task_count_stat = task_count_stat
     return instance
 
