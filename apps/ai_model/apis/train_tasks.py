@@ -125,7 +125,14 @@ async def create_train_task(
     items.pop("ai_model_type")
     base_task = await TrainTask.filter(id=base_task_id).first()
     data_sets = await DataSet.filter(id__in=data_set_ids)
-    instance = await TrainTask.create(**items, creator=user, train_task_group=group, base_task=base_task)
+    last_task = await TrainTask.all().order_by("-version").first()
+    if last_task:
+        version = last_task.version + 1
+    else:
+        version = 1
+    instance = await TrainTask.create(
+        **items, version=version, creator=user, train_task_group=group, base_task=base_task
+    )
     await instance.data_sets.add(*data_sets)
     # 异步发起训练任务
     data_set_urls = []
