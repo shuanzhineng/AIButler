@@ -51,6 +51,11 @@ async def retrieve_label_task(pk: int, query_sets=Depends(data_range_permission(
     """创建标注任务"""
     instance = await get_instance(query_sets, pk)
     await instance.fetch_related("creator")
+    instance.stats = {
+        "new": await instance.samples.filter(state=LabelTaskSampleStateEnum.NEW).count(),
+        "done": await instance.samples.filter(state=LabelTaskSampleStateEnum.DONE).count(),
+        "skipped": await instance.samples.filter(state=LabelTaskSampleStateEnum.SKIPPED).count(),
+    }
     return instance
 
 

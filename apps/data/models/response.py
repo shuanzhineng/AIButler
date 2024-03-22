@@ -15,6 +15,7 @@ _LabelTaskSampleOut = pydantic_model_creator(
 
 class LabelTaskOut(_LabelTaskOut):  # type: ignore
     creator: CreatorOut | None = None
+    stats: dict = {}
 
 
 class LabelTaskSampleOut(_LabelTaskSampleOut):  # type: ignore

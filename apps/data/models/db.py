@@ -50,7 +50,12 @@ class LabelTaskSample(DBBaseModel):
         LabelTaskSampleStateEnum, description="标注状态", max_length=255, default=LabelTaskSampleStateEnum.NEW
     )
     label_task = fields.ForeignKeyField(
-        "models.LabelTask", on_delete=OnDelete.NO_ACTION, description="标注任务", null=True, db_constraint=False
+        "models.LabelTask",
+        on_delete=OnDelete.NO_ACTION,
+        related_name="samples",
+        description="标注任务",
+        null=True,
+        db_constraint=False,
     )
 
     class Meta:
