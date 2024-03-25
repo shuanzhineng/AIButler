@@ -42,7 +42,7 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
             else:
                 query_sets = query_sets.filter(creator=user)
         elif role.data_range == DataScopeEnum.CUSTOM:
-            depts = await role.depts.all()
+            depts = await role.depts.all().values_list("id", flat=True)
             query_sets = query_sets.filter(dept_belong__in=depts)
         elif role.data_range == DataScopeEnum.ALL:
             pass
