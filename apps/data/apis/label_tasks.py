@@ -229,7 +229,7 @@ async def export_to_datasets(
     dataset_group_id = items["dataset_group_id"]
     dataset_group_name = items["dataset_group_name"]
     dataset_group_note = items["dataset_group_note"]
-    data = sample_query_sets.filter(id__in=sample_ids).values(
+    data = await sample_query_sets.filter(id__in=sample_ids).values(
         "id", "task_attachment_ids", "annotated_count", "data", "state"
     )
     xml_result = converter.convert(input_data=data, export_type="xml")

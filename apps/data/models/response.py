@@ -1,5 +1,3 @@
-import json
-
 from common.base_pydantic import CreatorOut, custom_base_model_config, CustomBaseModel
 from pydantic import field_validator
 from apps.data.models.db import LabelTask, LabelTaskSample, DataSet, DataSetGroup
@@ -19,12 +17,13 @@ class LabelTaskOut(_LabelTaskOut):  # type: ignore
 
 
 class LabelTaskSampleOut(_LabelTaskSampleOut):  # type: ignore
-    @field_validator(
-        "data",
-    )
-    @classmethod
-    def change_genre(cls, v):
-        return json.dumps(v, ensure_ascii=False)
+    # @field_validator(
+    #     "data",
+    # )
+    # @classmethod
+    # def change_genre(cls, v):
+    #     return json.dumps(v, ensure_ascii=False)
+    pass
 
 
 # ---------------------数据集组model------------------------
