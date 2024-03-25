@@ -9,6 +9,10 @@ from common.authentication import (
     refresh_token_to_access_token,
 )
 from common.custom_route import CustomRoute
+from common.utils import construct_tree
+from common.depends import NeedAuthorization
+from apps.system.models.db import Menu
+from apps.system.models import response as system_response
 
 
 router = APIRouter(
@@ -30,3 +34,23 @@ async def get_access_token(
 async def _refresh_token(refresh_token: str) -> dict[str, str]:
     """刷新token"""
     return refresh_token_to_access_token(refresh_token)
+
+
+@router.get("/user-menus", summary="用户展示的菜单树", response_model=list[system_response.QueryMenuTreeOut])
+async def user_menu_tree(user: NeedAuthorization):
+    """完整菜单树"""
+    roles = await user.roles.all()
+    if not roles:
+        return []
+    # 将多个角色的菜单进行合并
+    dept_ids = []
+    for role in roles:
+        dept_ids.extend(list(await role.depts.all()))
+    dept_ids = list(set(dept_ids))
+    menus = await Menu.filter(id__in=dept_ids)
+    tree = construct_tree(menus)
+    output = []
+    for obj in tree:
+        result = dict(await system_response.QueryMenuTreeOut.from_tortoise_orm(obj))
+        output.append(result)
+    return output

@@ -73,6 +73,19 @@ class Dept(DBBaseModel):
         table_description = "部门"
         ordering = ("sort",)
 
+    @classmethod
+    async def get_children(cls, parent_ids):
+        # 获取所有直接子节点
+        children = await cls.filter(parent__in=parent_ids).values_list("id", flat=True)
+        if not children:
+            return []
+
+        # 递归获取更深层次的子节点
+        recursive_children = await cls.get_children(parent_ids=children)
+
+        # 将直接子节点和递归子节点合并
+        return list(children) + recursive_children
+
 
 class Menu(DBBaseModel):
     """菜单"""
