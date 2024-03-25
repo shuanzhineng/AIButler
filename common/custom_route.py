@@ -23,6 +23,7 @@ NO_LOG_PATHS: list[str] = [
     r"/ai-models/train-task-groups/train-tasks/\d+?/status",
     r"/system/celery-workers/online",
     r"/system/celery-workers/offline",
+    r"/applications/deploy-online-infers/\d+?/by-worker",
 ]  # 登录接口和涉及文件上传和下载的接口不记录日志
 
 
