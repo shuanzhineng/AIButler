@@ -122,7 +122,7 @@ async def label_task_attachments(
 
 @router.delete("/{pk}/bulk-delete-attachments", summary="批量删除附件")
 async def delete_label_task_attachments(
-    pk: int, query_sets=Depends(data_range_permission(LabelTask)), attachment_ids: list[int] = Body()
+    pk: int, query_sets=Depends(data_range_permission(LabelTask)), attachment_ids: list[int] = Body(embed=True)
 ):
     """删除标注任务附件"""
     await get_instance(query_sets, pk)
