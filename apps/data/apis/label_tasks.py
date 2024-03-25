@@ -126,10 +126,10 @@ async def delete_label_task_attachments(
 ):
     """删除标注任务附件"""
     await get_instance(query_sets, pk)
-    file_paths = await LabelTaskAttachment.filter(id__in=attachment_ids).values_list("file_path")
-    for file_path in file_paths:
+    local_file_paths = await LabelTaskAttachment.filter(id__in=attachment_ids).values_list("local_file_path", flat=True)
+    for local_file_path in local_file_paths:
         try:
-            os.remove(file_path)
+            os.remove(local_file_path)
         except FileNotFoundError:
             pass
     await LabelTaskAttachment.filter(id__in=attachment_ids).delete()
