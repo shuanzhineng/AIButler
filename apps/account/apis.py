@@ -40,15 +40,19 @@ async def _refresh_token(refresh_token: str) -> dict[str, str]:
 async def user_menu_tree(user: NeedAuthorization):
     """完整菜单树"""
     roles = await user.roles.all()
-    if not roles:
+    if not roles and not user.is_superuser:
         return []
-    # 将多个角色的菜单进行合并
-    dept_ids = []
-    for role in roles:
-        dept_ids.extend(list(await role.depts.all()))
-    dept_ids = list(set(dept_ids))
-    menus = await Menu.filter(id__in=dept_ids)
-    tree = construct_tree(menus)
+    elif user.is_superuser:
+        menus = await Menu.all()
+        tree = construct_tree(menus)
+    else:
+        # 将多个角色的菜单进行合并
+        menu_ids = []
+        for role in roles:
+            menu_ids.extend(list(await role.menus.all().values_list("id", flat=True)))
+        menu_ids = list(set(menu_ids))
+        menus = await Menu.filter(id__in=menu_ids)
+        tree = construct_tree(menus)
     output = []
     for obj in tree:
         result = dict(await system_response.QueryMenuTreeOut.from_tortoise_orm(obj))
