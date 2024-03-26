@@ -5,7 +5,7 @@ from common.enums import DeployOnlineInferStatusEnum
 
 class CreateDeployOnlineInferIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=50)
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
     train_task_id: int
     is_gpu: bool = False
 
