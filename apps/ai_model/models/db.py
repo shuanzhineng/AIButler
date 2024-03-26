@@ -20,6 +20,7 @@ class TrainTaskGroup(DBBaseModel):
     class Meta:
         table = "train_task_group"
         table_description = "训练任务组"
+        ordering = ("-id",)
 
 
 class TrainTask(DBBaseModel):
@@ -79,3 +80,4 @@ class TrainTask(DBBaseModel):
     class Meta:
         table = "train_task"
         table_description = "训练任务"
+        ordering = ("-id",)

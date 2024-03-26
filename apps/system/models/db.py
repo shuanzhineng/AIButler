@@ -34,6 +34,7 @@ class User(DBBaseModel):
     class Meta:
         table = "user"
         table_description = "用户表"
+        ordering = ("-id",)
 
     @classmethod
     async def create_user(cls: type["User"], username: str, password: str, **kwargs: Any) -> "User":
@@ -71,7 +72,7 @@ class Dept(DBBaseModel):
     class Meta:
         table = "dept"
         table_description = "部门"
-        ordering = ("sort",)
+        ordering = ("sort", "-id")
 
     @classmethod
     async def get_children(cls, parent_ids):
@@ -107,7 +108,7 @@ class Menu(DBBaseModel):
     class Meta:
         table = "menu"
         table_description = "菜单"
-        ordering = ("sort",)
+        ordering = ("sort", "-id")
 
 
 class Role(DBBaseModel):
@@ -137,7 +138,7 @@ class Role(DBBaseModel):
     class Meta:
         table = "role"
         table_description = "角色"
-        ordering = ("sort",)
+        ordering = ("sort", "-id")
 
 
 class MenuAPIPermission(DBBaseModel):
@@ -157,6 +158,7 @@ class MenuAPIPermission(DBBaseModel):
     class Meta:
         table = "menu_api_permission"
         table_description = "菜单接口权限"
+        ordering = ("-id",)
 
 
 class AccessLog(DBBaseModel):
@@ -175,6 +177,7 @@ class AccessLog(DBBaseModel):
     class Meta:
         table = "access_log"
         table_description = "访问日志"
+        ordering = ("-id",)
 
 
 class LoginLog(DBBaseModel):
@@ -191,6 +194,7 @@ class LoginLog(DBBaseModel):
     class Meta:
         table = "login_log"
         table_description = "访问日志"
+        ordering = ("-id",)
 
 
 class CeleryWorker(DBBaseModel):
@@ -207,3 +211,4 @@ class CeleryWorker(DBBaseModel):
     class Meta:
         table = "celery_worker"
         table_description = "celery worker"
+        ordering = ("-id",)

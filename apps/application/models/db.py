@@ -25,3 +25,4 @@ class DeployOnlineInfer(DBBaseModel):
     class Meta:
         table = "deploy_online_infer"
         table_description = "部署在线推理"
+        ordering = ("-id",)

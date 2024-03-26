@@ -24,6 +24,7 @@ class LabelTask(DBBaseModel):
     class Meta:
         table = "label_task"
         table_description = "标注任务"
+        ordering = ("-id",)
 
 
 class LabelTaskAttachment(DBBaseModel):
@@ -100,6 +101,7 @@ class DataSetGroup(DBBaseModel):
     class Meta:
         table = "data_set_group"
         table_description = "数据集组"
+        ordering = ("-id",)
 
 
 class DataSet(DBBaseModel):
@@ -126,3 +128,4 @@ class DataSet(DBBaseModel):
     class Meta:
         table = "data_set"
         table_description = "数据集"
+        ordering = ("-id",)
