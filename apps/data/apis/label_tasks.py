@@ -29,7 +29,14 @@ router = APIRouter(
 async def label_tasks(query_sets=Depends(data_range_permission(LabelTask)), params=Depends(Params)):
     """标注任务列表"""
     query_sets = query_sets.prefetch_related("creator")
-    return await paginate(query_sets, params=params)
+    output = await paginate(query_sets, params=params)
+    for item in output.items:
+        item.stats = {
+            "new": await item.samples.filter(state=LabelTaskSampleStateEnum.NEW).count(),
+            "done": await item.samples.filter(state=LabelTaskSampleStateEnum.DONE).count(),
+            "skipped": await item.samples.filter(state=LabelTaskSampleStateEnum.SKIPPED).count(),
+        }
+    return output
 
 
 @router.post("", summary="创建标注任务", response_model=response.LabelTaskOut)
