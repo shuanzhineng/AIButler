@@ -32,9 +32,11 @@ async def label_tasks(query_sets=Depends(data_range_permission(LabelTask)), para
     output = await paginate(query_sets, params=params)
     for item in output.items:
         item.stats = {
-            "new": await item.samples.filter(state=LabelTaskSampleStateEnum.NEW).count(),
-            "done": await item.samples.filter(state=LabelTaskSampleStateEnum.DONE).count(),
-            "skipped": await item.samples.filter(state=LabelTaskSampleStateEnum.SKIPPED).count(),
+            "new": await LabelTaskSample.filter(label_task_id=item.id, state=LabelTaskSampleStateEnum.NEW).count(),
+            "done": await LabelTaskSample.filter(label_task_id=item.id, state=LabelTaskSampleStateEnum.DONE).count(),
+            "skipped": await LabelTaskSample.filter(
+                label_task_id=item.id, state=LabelTaskSampleStateEnum.SKIPPED
+            ).count(),
         }
     return output
 
