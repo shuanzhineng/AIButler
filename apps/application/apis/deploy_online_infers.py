@@ -26,6 +26,7 @@ async def create_online_infers(user: NeedAuthorization, items: request.CreateDep
     """创建在线应用"""
     items = items.model_dump()
     train_task_id = items.pop("train_task_id")
+    is_gpu = items["is_gpu"]
     train_task = await TrainTask.get(id=train_task_id)
     # TOdO校验训练任务id
     token = str(uuid.uuid4().hex)
@@ -33,7 +34,7 @@ async def create_online_infers(user: NeedAuthorization, items: request.CreateDep
     file = await train_task.result_file
     train_result_url = minio_client.presigned_download_file(file.path)
     # 发起异步部署
-    deploy_onnx_infer_by_train_task.delay(str(instance.id), token, train_result_url)
+    deploy_onnx_infer_by_train_task.delay(str(instance.id), token, train_result_url, is_gpu)
 
     await instance.fetch_related("creator")
     return instance
