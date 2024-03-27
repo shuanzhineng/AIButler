@@ -1,11 +1,8 @@
 import copy
+import os
 import json
-import logging
 from xml.etree import ElementTree as ET
 from typing import List, Literal
-
-
-logger = logging.getLogger(__name__)
 
 xml_template = """
 <annotation>
@@ -19,7 +16,6 @@ xml_template = """
     <segmented>0</segmented>
 </annotation>
 """
-doc = ET.fromstring(xml_template)
 
 
 class Converter:
@@ -90,9 +86,9 @@ class Converter:
     ) -> list:
         global xml_template
         xml_template = copy.deepcopy(xml_template)
-        doc = ET.fromstring(xml_template)
         xml_parts = []
         for sample in input_data:
+            doc = ET.fromstring(xml_template)
             data = sample.get("data")
             if not data:
                 continue
@@ -102,17 +98,22 @@ class Converter:
                 width = annotated_result["width"]
                 height = annotated_result["height"]
                 file_name = list(data["fileNames"].values())[0]
-                folder = ""
-                if "/" in file_name:
-                    dir_name, file_name = file_name.split("/")
-                if label := doc.find(".//size/width"):
-                    label.text = str(width)
-                if label := doc.find(".//size/height"):
-                    label.text = str(height)
-                if label := doc.find(".//folder"):
-                    label.text = folder
-                if label := doc.find(".//filename"):
-                    label.text = file_name
+                folder = os.path.dirname(file_name)
+                if folder:
+                    file_name = file_name.split("/")[-1]
+                doc_width = doc.find(".//size/width")
+                doc_height = doc.find(".//size/height")
+                doc_folder = doc.find(".//folder")
+                doc_filename = doc.find(".//filename")
+
+                if doc_width is not None:
+                    doc_width.text = str(width)
+                if doc_height is not None:
+                    doc_height.text = str(height)
+                if doc_folder is not None:
+                    doc_folder.text = str(folder)
+                if doc_filename is not None:
+                    doc_filename.text = str(file_name)
                 for tool in annotated_result.copy().keys():
                     if tool.endswith("Tool"):
                         tool_results = annotated_result.pop(tool)

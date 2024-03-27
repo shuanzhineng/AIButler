@@ -266,9 +266,9 @@ async def export_to_datasets(
         if label := doc.find(".//filename"):
             file_name = str(label.text)
         if folder:
-            label_file_path = f"static/labelu/{task_id}/labels/{folder}-{file_name.split('.')[0]}.xml"
+            label_file_path = f"{label_dir}/{folder}-{file_name.split('.')[0]}.xml"
         else:
-            label_file_path = f"static/labelu/{task_id}/labels/{file_name.split('.')[0]}.xml"
+            label_file_path = f"{label_dir}/{file_name.split('.')[0]}.xml"
         async with aiofiles.open(label_file_path, "w") as f:
             await f.write(xml_str)
     # 压缩为zip
@@ -276,9 +276,10 @@ async def export_to_datasets(
     await asyncify(shutil.make_archive)(output_zip, "zip", root_dir=source_dir)
     # 上传到minio
     year_month = get_current_time().strftime("%Y-%m")
-    object_name = f"{user.username}/{year_month}/labelu/{task_id}.zip"
+    label_task = await LabelTask.get(id=task_id)
+    object_name = f"{user.username}/{year_month}/labelu/{label_task.name}-{task_id}.zip"
     await asyncify(minio_client.fupload_file)(object_name, output_zip + ".zip")
-    file = await OssFile.create(path=object_name, filename=f"{task_id}.zip")
+    file = await OssFile.create(path=object_name, filename=f"{label_task.name}-{task_id}.zip")
     # 导入到数据集
     if dataset_group_id:
         group = await DataSetGroup.filter(id=dataset_group_id).first()
