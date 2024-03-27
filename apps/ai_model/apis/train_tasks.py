@@ -10,7 +10,7 @@ from apps.ai_model.models import request, response
 from apps.data.models.db import DataSet, OssFile
 from tortoise.functions import Count
 from common.utils import get_instance, get_current_time
-from common.enums import TrainStatusEnum, TrainFrameworkEnum
+from common.enums import TrainStatusEnum, TrainFrameworkEnum, AnnotationTypeEnum
 from celery_app.tasks import pytorch_object_detection_train
 from common.minio_client import minio_client
 from asyncer import asyncify
@@ -156,17 +156,30 @@ async def create_train_task(
     log_upload_url = await asyncify(minio_client.presigned_upload_file)(log_file.path)
     celery_task = None
     if instance.framework == TrainFrameworkEnum.PYTORCH:
-        pytorch_object_detection_train_params = {
-            "train_task_id": str(instance.id),
-            "network": instance.network,
-            "data_set_urls": data_set_urls,
-            "pretrain_model_weight_download_url": pretrain_model_weight_download_url,
-            "train_params": items["params"],
-            "model_weight_upload_url": model_weight_upload_url,
-            "log_upload_url": log_upload_url,
-        }
-        logger.info(f"发起异步训练: {pytorch_object_detection_train_params}")
-        celery_task = pytorch_object_detection_train.delay(**pytorch_object_detection_train_params)
+        if group.ai_model_type == AnnotationTypeEnum.OBJECT_DETECTION:
+            pytorch_object_detection_train_params = {
+                "train_task_id": str(instance.id),
+                "network": instance.network,
+                "data_set_urls": data_set_urls,
+                "pretrain_model_weight_download_url": pretrain_model_weight_download_url,
+                "train_params": items["params"],
+                "model_weight_upload_url": model_weight_upload_url,
+                "log_upload_url": log_upload_url,
+            }
+            logger.info(f"发起异步训练: {pytorch_object_detection_train_params}")
+            celery_task = pytorch_object_detection_train.delay(**pytorch_object_detection_train_params)
+    if instance.framework == TrainFrameworkEnum.PADDLEPADDLE:
+        if group.ai_model_type == AnnotationTypeEnum.IMAGE_CLASSIFY:
+            paddle_image_classify_train_params = {
+                "train_task_id": str(instance.id),
+                "network": instance.network,
+                "data_set_urls": data_set_urls,
+                "pretrain_model_weight_download_url": pretrain_model_weight_download_url,
+                "train_params": items["params"],
+                "model_weight_upload_url": model_weight_upload_url,
+                "log_upload_url": log_upload_url,
+            }
+            logger.info(f"发起异步训练: {paddle_image_classify_train_params}")
     if celery_task:
         instance.celery_task_id = str(celery_task.id)
     await instance.save()
