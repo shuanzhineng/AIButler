@@ -269,10 +269,14 @@ async def export_to_datasets(
             file_name = str(doc_filename.text)
         if folder:
             # 文件名中可能存在多个.的情况, 删除最后一段后缀
-            file_name = ".".join(file_name.split(".").pop(-1))
+            split_list = file_name.split(".")
+            split_list.pop(-1)
+            file_name = ".".join(split_list)
             label_file_path = f"{label_dir}/{folder}-{file_name}.xml"
         else:
-            file_name = ".".join(file_name.split(".").pop(-1))
+            split_list = file_name.split(".")
+            split_list.pop(-1)
+            file_name = ".".join(split_list)
             label_file_path = f"{label_dir}/{file_name}.xml"
         async with aiofiles.open(label_file_path, "w") as f:
             await f.write(xml_str)
