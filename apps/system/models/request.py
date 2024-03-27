@@ -42,7 +42,7 @@ class CreateRoleIn(CustomBaseModel):
     code: str = Field(min_length=0, max_length=30)
     disabled: bool = False
     sort: int = Field(ge=0)
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
 
 
 class PutRoleIn(CustomBaseModel):
@@ -70,7 +70,7 @@ class CreateDeptIn(CustomBaseModel):
     email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])
     disabled: bool = False
     sort: int = Field(ge=0, default=1)
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
     parent_id: int | None = None
 
 
@@ -82,7 +82,7 @@ class PutUserIn(CustomBaseModel):
     phone: str = Field(min_length=11, max_length=11, pattern=r"^1\d{10}$")
     email: str = Field(min_length=5, max_length=255, pattern=r"[^@]+@[^@]+\.[^@]+", examples=["123@qq.com"])
     disabled: bool = False
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
     role_ids: list[int]
     dept_ids: list[int]
 

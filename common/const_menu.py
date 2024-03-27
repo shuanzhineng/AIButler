@@ -646,7 +646,7 @@ INIT_MENU = [
                 ],
             },
             {
-                "name": "登录日志",
+                "name": "操作日志",
                 "code": "log_manage::operate_log",
                 "icon": "xxx",
                 "sort": 102000,

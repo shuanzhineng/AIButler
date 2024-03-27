@@ -107,12 +107,12 @@ async def label_task_attachments(
     instance = await get_instance(query_sets, pk)
     attachment_obj = await LabelTaskAttachment.create(label_task=instance, creator=user)
     filename = file.filename
-    if dir_name:
-        path = f"static/labelu/{instance.id}/{dir_name}/"
-        attachment_obj.local_file_path = f"{dir_name}/" + filename
-    else:
-        path = f"static/labelu/{instance.id}/"
-        attachment_obj.local_file_path = filename
+    # if dir_name:
+    #     path = f"static/labelu/{instance.id}/{dir_name}/"
+    #     attachment_obj.local_file_path = f"{dir_name}/" + filename
+    # else:
+    path = f"static/labelu/{instance.id}/"
+    attachment_obj.local_file_path = filename
     os.makedirs(path, exist_ok=True)
     async with aiofiles.open(path + filename, "wb") as f:
         await f.write(await file.read())

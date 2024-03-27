@@ -12,7 +12,7 @@ class CreateDeployOnlineInferIn(CustomBaseModel):
 
 class PutDeployOnlineInferIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=50)
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
 
 
 class PutDeployOnlineInferByWorkerIn(CustomBaseModel):

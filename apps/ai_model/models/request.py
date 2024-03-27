@@ -8,12 +8,12 @@ from common.const import PYTORCH_OBJECT_DETECTION_NETWORKS
 class TrainTaskGroupIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=50)
     ai_model_type: AnnotationTypeEnum
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
 
 
 class PutTrainTaskGroupIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=50)
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
 
 
 class PytorchObjectDetectionTrainParams(CustomBaseModel):

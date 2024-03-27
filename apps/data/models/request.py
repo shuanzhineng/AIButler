@@ -16,7 +16,7 @@ class LabelTaskIn(CustomBaseModel):
 class PatchLabelTaskIn(CustomBaseModel):
     name: str | None = Field(min_length=1, max_length=50, default=None)
     media_type: MediaTypeEnum | None = None
-    description: str | None = Field(min_length=0, max_length=200, default=None)
+    description: str | None = Field(min_length=0, max_length=200, default="")
     tips: str | None = None
     config: str | None = None
 
@@ -39,14 +39,14 @@ class PatchLabelTaskSampleIn(CustomBaseModel):
 
 class DataSetGroupIn(CustomBaseModel):
     name: str = Field(min_length=1, max_length=50)
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
     disabled: bool = False
     data_type: MediaTypeEnum = MediaTypeEnum.IMAGE
     annotation_type: AnnotationTypeEnum
 
 
 class DataSetIn(CustomBaseModel):
-    description: str = Field(min_length=0, max_length=200)
+    description: str = Field(min_length=0, max_length=200, default="")
     file_id: int
 
 
