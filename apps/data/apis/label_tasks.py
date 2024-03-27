@@ -261,10 +261,12 @@ async def export_to_datasets(
         doc = ET.fromstring(xml_str)
         folder = None
         file_name = ""
-        if label := doc.find(".//folder"):
-            folder = label.text
-        if label := doc.find(".//filename"):
-            file_name = str(label.text)
+        doc_folder = doc.find(".//folder")
+        doc_filename = doc.find(".//filename")
+        if doc_folder is not None:
+            folder = doc_folder.text
+        if doc_filename is not None:
+            file_name = str(doc_filename.text)
         if folder:
             label_file_path = f"{label_dir}/{folder}-{file_name.split('.')[0]}.xml"
         else:
@@ -292,7 +294,7 @@ async def export_to_datasets(
     await DataSet.create(version=version, data_set_group=group, creator=user, description=dataset_group_note, file=file)
     # 删除掉压缩包
     try:
-        os.remove(output_zip)
+        os.remove(output_zip + ".zip")
     except Exception:
         pass
     return
