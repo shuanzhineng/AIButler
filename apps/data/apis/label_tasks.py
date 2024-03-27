@@ -268,9 +268,12 @@ async def export_to_datasets(
         if doc_filename is not None:
             file_name = str(doc_filename.text)
         if folder:
-            label_file_path = f"{label_dir}/{folder}-{file_name.split('.')[0]}.xml"
+            # 文件名中可能存在多个.的情况, 删除最后一段后缀
+            file_name = ".".join(file_name.split(".").pop(-1))
+            label_file_path = f"{label_dir}/{folder}-{file_name}.xml"
         else:
-            label_file_path = f"{label_dir}/{file_name.split('.')[0]}.xml"
+            file_name = ".".join(file_name.split(".").pop(-1))
+            label_file_path = f"{label_dir}/{file_name}.xml"
         async with aiofiles.open(label_file_path, "w") as f:
             await f.write(xml_str)
     # 压缩为zip
