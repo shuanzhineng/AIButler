@@ -34,7 +34,7 @@ async def create_train_task_group(user: NeedAuthorization, items: request.TrainT
 @router.get("", summary="训练任务组列表", response_model=Page[response.TrainTaskGroupOut])
 async def get_train_task_groups(query_sets=Depends(data_range_permission(TrainTaskGroup)), params=Depends(Params)):
     """训练任务组列表"""
-    query_sets = query_sets.prefetch_related("creator")
+    query_sets = query_sets.select_related("creator")
     output = await paginate(query_sets, params=params)
     for item in output.items:
         counts = (
@@ -209,7 +209,7 @@ async def get_train_tasks(
     params=Depends(Params),
 ):
     group = await get_instance(group_query_sets, group_id)
-    query_sets = query_sets.filter(train_task_group=group).prefetch_related("creator")
+    query_sets = query_sets.filter(train_task_group=group).select_related("creator")
     output = await paginate(query_sets, params=params)
     return output
 

@@ -67,6 +67,9 @@ class CustomRoute(APIRoute):
             for no_log_path in NO_LOG_PATHS:
                 if re.findall(no_log_path, request.url.path):
                     return response
+            # 不记录get和options
+            if request.method in ["GET", "OPTIONS"]:
+                return response
             # 记录访问日志
             request_body: bytes = await request.body()
             # 提取操作人

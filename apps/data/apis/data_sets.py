@@ -30,7 +30,7 @@ async def get_presigned_upload_url(filename: str, user: NeedAuthorization):
 @router.get("", summary="数据集组", response_model=Page[response.DataSetGroupOut])
 async def data_set_groups(query_sets=Depends(data_range_permission(DataSetGroup)), params=Depends(Params)):
     """数据集组列表"""
-    query_sets = query_sets.prefetch_related("creator")
+    query_sets = query_sets.select_related("creator")
     output = await paginate(query_sets, params=params)
     for item in output.items:
         item.data_set_count = await DataSet.filter(data_set_group_id=item.id).count()

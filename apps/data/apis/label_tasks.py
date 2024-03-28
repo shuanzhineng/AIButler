@@ -28,7 +28,7 @@ router = APIRouter(
 @router.get("", summary="标注任务列表", response_model=Page[response.LabelTaskOut])
 async def label_tasks(query_sets=Depends(data_range_permission(LabelTask)), params=Depends(Params)):
     """标注任务列表"""
-    query_sets = query_sets.prefetch_related("creator")
+    query_sets = query_sets.select_related("creator")
     output = await paginate(query_sets, params=params)
     for item in output.items:
         item.stats = {

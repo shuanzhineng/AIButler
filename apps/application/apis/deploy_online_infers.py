@@ -43,7 +43,7 @@ async def create_online_infers(user: NeedAuthorization, items: request.CreateDep
 @router.get("", summary="在线应用列表", response_model=Page[response.DeployOnlineInferOut])
 async def get_online_infers(query_sets=Depends(data_range_permission(DeployOnlineInfer)), params=Depends(Params)):
     """外部通过api修改训练任务状态"""
-    query_sets = query_sets.prefetch_related("creator")
+    query_sets = query_sets.select_related("creator")
     output = await paginate(query_sets, params=params)
     return output
 
