@@ -27,7 +27,6 @@ async def login_log(
         query_sets = query_sets.filter(ip_addres__contains=ip_address)
     if is_success is not None:
         query_sets = query_sets.filter(is_success=is_success)
-    query_sets = await query_sets
     return paginate(query_sets, params=params)
 
 
@@ -48,5 +47,5 @@ async def access_log(
         query_sets = query_sets.filter(http_status_code=http_status_code)
     if method:
         query_sets = query_sets.filter(method=method)
-    query_sets = await query_sets.select_related("creator")
+    query_sets = query_sets.select_related("creator")
     return paginate(query_sets, params=params)
