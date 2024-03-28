@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends
 from apps.system.models.db import LoginLog, AccessLog
 from apps.system.models import response
 from common.depends import data_range_permission
-from fastapi_pagination import Page, Params, paginate
+from fastapi_pagination import Page, Params
+from fastapi_pagination.ext.tortoise import paginate
 from common.custom_route import CustomRoute
 from typing import Literal
 
