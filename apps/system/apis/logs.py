@@ -27,7 +27,7 @@ async def login_log(
         query_sets = query_sets.filter(ip_addres__contains=ip_address)
     if is_success is not None:
         query_sets = query_sets.filter(is_success=is_success)
-    return paginate(query_sets, params=params)
+    return await paginate(query_sets, params=params)
 
 
 @router.get("/access-logs", summary="访问日志列表", response_model=Page[response.AccessLogOut])
@@ -48,4 +48,4 @@ async def access_log(
     if method:
         query_sets = query_sets.filter(method=method)
     query_sets = query_sets.select_related("creator")
-    return paginate(query_sets, params=params)
+    return await paginate(query_sets, params=params)
