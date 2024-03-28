@@ -597,6 +597,16 @@ INIT_MENU = [
                             {"method": "DELETE", "api": "/system/users/{id}"},
                         ],
                     },
+                    {
+                        "name": "修改密码",
+                        "code": "system_manage::user_manage::change_password",
+                        "sort": 93600,
+                        "genre": "BUTTON",
+                        "disabled": False,
+                        "apis": [
+                            {"method": "PUT", "api": "/system/users/{id}/password"},
+                        ],
+                    },
                 ],
             },
         ],
