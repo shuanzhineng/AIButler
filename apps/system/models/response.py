@@ -18,6 +18,7 @@ _ButtonNoParentOut = pydantic_model_creator(
     include=(
         "id",
         "name",
+        "code",
         "sort",
         "disabled",
     ),
