@@ -47,6 +47,5 @@ async def access_log(
         query_sets = query_sets.filter(http_status_code=http_status_code)
     if method:
         query_sets = query_sets.filter(method=method)
-
-    query_sets = await query_sets.prefetch_related("creator")
+    query_sets = await query_sets.select_related("creator")
     return paginate(query_sets, params=params)
