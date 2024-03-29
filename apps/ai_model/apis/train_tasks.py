@@ -15,6 +15,7 @@ from celery_app.tasks import pytorch_object_detection_train
 from common.minio_client import minio_client
 from asyncer import asyncify
 from loguru import logger
+from typing import Any
 
 router = APIRouter(
     prefix="/train-task-groups",
@@ -225,11 +226,20 @@ async def get_train_task_detail(
     instance = await get_instance(query_sets, pk)
     await instance.fetch_related("creator")
     datasets = await instance.data_sets.all()
-    output = []
+    output: dict[Any, Any] = {}
+
     for d in datasets:
         file = await d.file
-        output.append({"id": d.id, "file": {"filename": file.filename}})
-    instance.show_data_sets = output
+        group = await d.data_set_group
+        if group_id in output:
+            output[group.id]["children"].append({"id": d.id, "file": {"filename": file.filename}})
+        else:
+            output[group.id] = {
+                "id": group.id,
+                "name": group.name,
+                "children": [{"id": d.id, "file": {"filename": file.filename}}],
+            }
+    instance.show_data_sets = list(output.values())
     instance.ai_model_type = group.ai_model_type.value
     return instance
 
