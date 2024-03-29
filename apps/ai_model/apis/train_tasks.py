@@ -11,7 +11,7 @@ from apps.data.models.db import DataSet, OssFile
 from tortoise.functions import Count
 from common.utils import get_instance, get_current_time
 from common.enums import TrainStatusEnum, TrainFrameworkEnum, AnnotationTypeEnum
-from celery_app.tasks import pytorch_object_detection_train
+from celery_app.tasks import pytorch_object_detection_train, paddle_image_classify_train
 from common.minio_client import minio_client
 from asyncer import asyncify
 from loguru import logger
@@ -181,6 +181,7 @@ async def create_train_task(
                 "log_upload_url": log_upload_url,
             }
             logger.info(f"发起异步训练: {paddle_image_classify_train_params}")
+            celery_task = paddle_image_classify_train.delay(**paddle_image_classify_train_params)
     if celery_task:
         instance.celery_task_id = str(celery_task.id)
     await instance.save()
