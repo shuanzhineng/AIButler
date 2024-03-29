@@ -38,3 +38,18 @@ class TrainTaskOut(_TrainTaskOut):  # type: ignore
         if not isinstance(v, dict):
             return {"name": TrainStatusEnum.get_display(v), "value": v}
         return v
+
+
+class TrainTaskDetailOut(_TrainTaskOut):  # type: ignore
+    creator: CreatorOut | None = None
+    ai_model_type: str
+    data_sets: list[dict]
+
+    @field_validator(
+        "status",
+    )
+    @classmethod
+    def change_status(cls, v):
+        if not isinstance(v, dict):
+            return {"name": TrainStatusEnum.get_display(v), "value": v}
+        return v

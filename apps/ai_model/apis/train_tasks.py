@@ -214,8 +214,23 @@ async def get_train_tasks(
     return output
 
 
-@router.get("/{group_id}/tasks/{pk}", summary="训练任务详情", response_model=response.TrainTaskOut)
+@router.get("/{group_id}/tasks/{pk}", summary="训练任务详情", response_model=response.TrainTaskDetailOut)
 async def get_train_task_detail(
+    group_id: int,
+    pk: int,
+    group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
+    query_sets=Depends(data_range_permission(TrainTask)),
+):
+    group = await get_instance(group_query_sets, group_id)
+    instance = await get_instance(query_sets, pk)
+    await instance.fetch_related("creator")
+    instance.data_sets = await instance.data_sets.all().values("filename", "id")
+    instance.ai_model_type = group.ai_model_type.value
+    return instance
+
+
+@router.get("/{group_id}/tasks/{pk}/download-weight", summary="下载训练结果权重")
+async def get_train_task_weight(
     group_id: int,
     pk: int,
     group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
@@ -223,5 +238,20 @@ async def get_train_task_detail(
 ):
     await get_instance(group_query_sets, group_id)
     instance = await get_instance(query_sets, pk)
-    await instance.fetch_related("creator")
-    return instance
+    file = await instance.result_file
+    download_url = await asyncify(minio_client.presigned_download_file)(file.path)
+    return {"download_url": download_url}
+
+
+@router.get("/{group_id}/tasks/{pk}/download-log", summary="下载训练日志")
+async def get_train_task_log(
+    group_id: int,
+    pk: int,
+    group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
+    query_sets=Depends(data_range_permission(TrainTask)),
+):
+    await get_instance(group_query_sets, group_id)
+    instance = await get_instance(query_sets, pk)
+    file = await instance.log_file
+    download_url = await asyncify(minio_client.presigned_download_file)(file.path)
+    return {"download_url": download_url}

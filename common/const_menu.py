@@ -227,6 +227,7 @@ INIT_MENU = [
                         "apis": [
                             {"method": "GET", "api": "/ai-models/train-task-groups/{id}"},
                             {"method": "GET", "api": "/ai-models/train-task-groups/{id}/tasks"},
+                            {"method": "GET", "api": "/ai-models/train-task-groups/{id}/tasks/{id}"},
                         ],
                     },
                     {
