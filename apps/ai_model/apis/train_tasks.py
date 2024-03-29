@@ -224,7 +224,11 @@ async def get_train_task_detail(
     group = await get_instance(group_query_sets, group_id)
     instance = await get_instance(query_sets, pk)
     await instance.fetch_related("creator")
-    instance.data_sets = await instance.data_sets.all().values("filename", "id")
+    datasets = await instance.data_sets.all()
+    output = []
+    for d in datasets:
+        output.append({"id": d.id, "file": {"filename": await d.file.filename}})
+    instance.data_sets = output
     instance.ai_model_type = group.ai_model_type.value
     return instance
 
