@@ -231,7 +231,7 @@ async def get_train_task_detail(
     for d in datasets:
         file = await d.file
         data_set_group = await d.data_set_group
-        if group_id in output:
+        if data_set_group.id in output:
             output[data_set_group.id]["children"].append({"id": d.id, "file": {"filename": file.filename}})
         else:
             output[data_set_group.id] = {
