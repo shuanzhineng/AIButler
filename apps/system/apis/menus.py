@@ -31,9 +31,12 @@ async def menus(params=Depends(Params), parent_id: str | None = None, query_sets
 
 
 @router.get("/full-tree", summary="菜单树", response_model=list[response.QueryMenuTreeOut])
-async def menu_tree(query_sets=Depends(data_range_permission(Menu))):
+async def menu_tree(query_sets=Depends(data_range_permission(Menu)), no_button: bool = False):
     """完整菜单树"""
-    query_sets = await query_sets.exclude(genre=MenuGenreEnum.BUTTON).prefetch_related("parent")
+    if no_button:
+        query_sets = await query_sets.exclude(genre=MenuGenreEnum.BUTTON).prefetch_related("parent")
+    else:
+        query_sets = await query_sets.prefetch_related("parent")
     tree = construct_tree(query_sets)
     output = []
     for obj in tree:
