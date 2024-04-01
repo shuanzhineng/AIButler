@@ -30,13 +30,13 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
         elif role.data_range == DataScopeEnum.ONLY_SELF:
             query_sets = query_sets.filter(creator=user)
         elif role.data_range == DataScopeEnum.ONLY_DEPARTMENT:
-            if user.dept_belong:
-                query_sets = query_sets.filter(dept_belong_id=user.dept_belong.id)
+            if dept_belong_obj := await user.dept_belong:
+                query_sets = query_sets.filter(dept_belong_id=dept_belong_obj.id)
             else:
                 query_sets = query_sets.filter(creator=user)
         elif role.data_range == DataScopeEnum.SELF_AND_SUBORDINATES:
             # 查询当前机构的所有子级机构
-            if dept_belong_obj := user.dept_belong:
+            if dept_belong_obj := await user.dept_belong:
                 depts = await Dept.get_children(parent_ids=[dept_belong_obj.id])
                 query_sets = query_sets.filter(dept_belong_id__in=depts)
             else:
