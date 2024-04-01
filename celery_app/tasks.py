@@ -1,4 +1,5 @@
 from celery_app import celery_app
+from common.enums import AnnotationTypeEnum
 
 
 @celery_app.task
@@ -31,7 +32,11 @@ def paddle_image_classify_train(
 
 @celery_app.task
 def deploy_onnx_infer_by_train_task(
-    deploy_id: str, inner_token: str, train_result_url: str | None = None, is_gpu: bool = False
+    deploy_id: str,
+    inner_token: str,
+    train_result_url: str | None = None,
+    is_gpu: bool = False,
+    service_type: AnnotationTypeEnum = AnnotationTypeEnum.OBJECT_DETECTION,
 ):
     """仅用名字占位即可, 具体的业务放到worker端实现"""
     pass
