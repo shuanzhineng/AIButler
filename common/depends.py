@@ -30,20 +30,20 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
         elif role.data_range == DataScopeEnum.ONLY_SELF:
             query_sets = query_sets.filter(creator=user)
         elif role.data_range == DataScopeEnum.ONLY_DEPARTMENT:
-            if dept_belong_obj := await user.dept_belong:
-                query_sets = query_sets.filter(dept_belong_id=dept_belong_obj.id)
+            if dept_belong_obj := await user.depts.all().first():
+                query_sets = query_sets.filter(dept_belong__id=dept_belong_obj.id)
             else:
                 query_sets = query_sets.filter(creator=user)
         elif role.data_range == DataScopeEnum.SELF_AND_SUBORDINATES:
             # 查询当前机构的所有子级机构
-            if dept_belong_obj := await user.dept_belong:
+            if dept_belong_obj := await user.depts.all().first():
                 depts = await Dept.get_children(parent_ids=[dept_belong_obj.id])
-                query_sets = query_sets.filter(dept_belong_id__in=depts)
+                query_sets = query_sets.filter(dept_belong__id__in=depts)
             else:
                 query_sets = query_sets.filter(creator=user)
         elif role.data_range == DataScopeEnum.CUSTOM:
             depts = await role.depts.all().values_list("id", flat=True)
-            query_sets = query_sets.filter(dept_belong_id__in=depts)
+            query_sets = query_sets.filter(dept_belong__id__in=depts)
         elif role.data_range == DataScopeEnum.ALL:
             pass
         return query_sets
