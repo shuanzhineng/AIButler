@@ -38,6 +38,7 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
             # 查询当前机构的所有子级机构
             if dept_belong_obj := await user.depts.all().first():
                 depts = await Dept.get_children(parent_ids=[dept_belong_obj.id])
+                depts = [dept_belong_obj.id] + depts
                 query_sets = query_sets.filter(dept_belong__id__in=depts)
             else:
                 query_sets = query_sets.filter(creator=user)

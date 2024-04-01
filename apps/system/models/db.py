@@ -76,7 +76,7 @@ class Dept(DBBaseModel):
 
     @classmethod
     async def get_children(cls, parent_ids):
-        # 获取所有直接子节点
+        # 获取所有直接子节点, 返回结果不含当前节点
         children = await cls.filter(parent__id__in=parent_ids).values_list("id", flat=True)
         if not children:
             return []
