@@ -36,7 +36,7 @@ def deploy_onnx_infer_by_train_task(
     inner_token: str,
     train_result_url: str | None = None,
     is_gpu: bool = False,
-    service_type: AnnotationTypeEnum = AnnotationTypeEnum.OBJECT_DETECTION,
+    service_type: str = AnnotationTypeEnum.OBJECT_DETECTION.value,
 ):
     """仅用名字占位即可, 具体的业务放到worker端实现"""
     pass
