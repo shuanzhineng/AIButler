@@ -39,6 +39,13 @@ class TrainTaskOut(_TrainTaskOut):  # type: ignore
             return {"name": TrainStatusEnum.get_display(v), "value": v}
         return v
 
+    @field_validator(
+        "version",
+    )
+    @classmethod
+    def change_version(cls, v):
+        return f"V{v}"
+
 
 class TrainTaskDetailOut(_TrainTaskOut):  # type: ignore
     creator: CreatorOut | None = None
@@ -53,3 +60,10 @@ class TrainTaskDetailOut(_TrainTaskOut):  # type: ignore
         if not isinstance(v, dict):
             return {"name": TrainStatusEnum.get_display(v), "value": v}
         return v
+
+    @field_validator(
+        "version",
+    )
+    @classmethod
+    def change_version(cls, v):
+        return f"V{v}"

@@ -67,3 +67,10 @@ class OssFile(CustomBaseModel):
 
 class DataSetOut(_DataSetOut):  # type: ignore
     file: OssFile | None = None
+
+    @field_validator(
+        "version",
+    )
+    @classmethod
+    def change_version(cls, v):
+        return f"V{v}"
