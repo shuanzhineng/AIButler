@@ -34,7 +34,10 @@ async def create_online_infers(user: NeedAuthorization, items: request.CreateDep
     file = await train_task.result_file
     train_result_url = minio_client.presigned_download_file(file.path)
     # 发起异步部署
-    deploy_onnx_infer_by_train_task.delay(str(instance.id), token, train_result_url, is_gpu)
+    train_task_group = await train_task.train_task_group
+    deploy_onnx_infer_by_train_task.delay(
+        str(instance.id), token, train_result_url, is_gpu, service_type=train_task_group.ai_model_type
+    )
 
     await instance.fetch_related("creator")
     return instance
