@@ -33,8 +33,17 @@ async def create_train_task_group(user: NeedAuthorization, items: request.TrainT
 
 
 @router.get("", summary="训练任务组列表", response_model=Page[response.TrainTaskGroupOut])
-async def get_train_task_groups(query_sets=Depends(data_range_permission(TrainTaskGroup)), params=Depends(Params)):
+async def get_train_task_groups(
+    name: str = "",
+    ai_model_type: str = "",
+    query_sets=Depends(data_range_permission(TrainTaskGroup)),
+    params=Depends(Params),
+):
     """训练任务组列表"""
+    if name:
+        query_sets = query_sets.filter(name__icontains=name)
+    if ai_model_type:
+        query_sets = query_sets.filter(ai_model_type=ai_model_type)
     query_sets = query_sets.select_related("creator")
     output = await paginate(query_sets, params=params)
     for item in output.items:
