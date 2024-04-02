@@ -52,16 +52,16 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
             dept_ids = await query_sets.all().values_list("id", flat=True)
             user_dept_ids = await user.depts.all().values_list("id", flat=True)
             query_sets = query_sets.filter(id__in=list(set(dept_ids + user_dept_ids)))
-        if isinstance(model_class, Role):
+        elif isinstance(model_class, Role):
             # 将当前用户的角色加入列表
             role_ids = await query_sets.all().values_list("id", flat=True)
             user_role_ids = await user.roles.all().values_list("id", flat=True)
             query_sets = query_sets.filter(id__in=list(set(role_ids + user_role_ids)))
-        if isinstance(model_class, User):
+        elif isinstance(model_class, User):
             user_ids = await query_sets.all().values_list("id", flat=True)
             user_ids += [user.id]
             query_sets = query_sets.filter(id__in=user_ids)
-        if isinstance(model_class, Menu):
+        elif isinstance(model_class, Menu):
             menu_ids = await query_sets.all().values_list("id", flat=True)
             roles = await user.roles.all()
             for role in roles:
