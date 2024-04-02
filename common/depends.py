@@ -1,7 +1,7 @@
 from common.authentication import need_access_token, selectable_access_token
 from typing import Annotated
 from fastapi import Depends
-from apps.system.models.db import User, Dept
+from apps.system.models.db import User, Dept, Role, Menu
 from common.db import DBBaseModel
 from tortoise.queryset import QuerySet
 from typing import Type, Callable
@@ -47,6 +47,27 @@ def data_range_permission(model_class: Type[DBBaseModel]) -> Callable:
             query_sets = query_sets.filter(dept_belong__id__in=depts)
         elif role.data_range == DataScopeEnum.ALL:
             pass
+        if isinstance(model_class, Dept):
+            # 将当前用户的归属部门加入列表
+            dept_ids = await query_sets.all().values_list("id", flat=True)
+            user_dept_ids = await user.depts.all().values_list("id", flat=True)
+            query_sets = query_sets.filter(id__in=list(set(dept_ids + user_dept_ids)))
+        if isinstance(model_class, Role):
+            # 将当前用户的角色加入列表
+            role_ids = await query_sets.all().values_list("id", flat=True)
+            user_role_ids = await user.roles.all().values_list("id", flat=True)
+            query_sets = query_sets.filter(id__in=list(set(role_ids + user_role_ids)))
+        if isinstance(model_class, User):
+            user_ids = await query_sets.all().values_list("id", flat=True)
+            user_ids += [user.id]
+            query_sets = query_sets.filter(id__in=user_ids)
+        if isinstance(model_class, Menu):
+            menu_ids = await query_sets.all().values_list("id", flat=True)
+            roles = await user.roles.all()
+            for role in roles:
+                menu_ids.extend(list(await role.menus.all().values_list("id", flat=True)))
+            menu_ids = list(set(menu_ids))
+            query_sets = query_sets.filter(id__in=menu_ids)
         return query_sets
 
     return inner
