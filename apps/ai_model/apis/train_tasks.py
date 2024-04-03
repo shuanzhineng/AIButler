@@ -253,6 +253,7 @@ async def get_train_task_detail(
             }
     instance.show_data_sets = list(output.values())
     instance.ai_model_type = group.ai_model_type.value
+    await instance.fetch_related("base_task")
     return instance
 
 
