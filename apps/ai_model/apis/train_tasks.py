@@ -152,9 +152,8 @@ async def create_train_task(
         data_set_urls.append(download_url)
     pretrain_model_weight_download_url = None
     if base_task:
-        pretrain_model_weight_download_url = await asyncify(minio_client.presigned_download_file)(
-            base_task.result_file.path
-        )
+        base_task_file = await base_task.result_file
+        pretrain_model_weight_download_url = await asyncify(minio_client.presigned_download_file)(base_task_file.path)
     year_month = get_current_time().strftime("%Y-%m")
     model_weight_oss_path = f"{user.username}/train/{year_month}/{instance.id}/result.zip"
     train_log_oss_path = f"{user.username}/train/{year_month}/{instance.id}/train.log"
@@ -215,12 +214,15 @@ async def put_train_task_status(task_id: int, status: TrainStatusEnum = Body(emb
 @router.get("/{group_id}/tasks", summary="训练任务列表", response_model=Page[response.TrainTaskOut])
 async def get_train_tasks(
     group_id: int,
+    status: str = "",
     group_query_sets=Depends(data_range_permission(TrainTaskGroup)),
     query_sets=Depends(data_range_permission(TrainTask)),
     params=Depends(Params),
 ):
     group = await get_instance(group_query_sets, group_id)
     query_sets = query_sets.filter(train_task_group=group).select_related("creator")
+    if status:
+        query_sets = query_sets.filter(status=status)
     output = await paginate(query_sets, params=params)
     return output
 

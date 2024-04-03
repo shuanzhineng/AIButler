@@ -51,6 +51,7 @@ class TrainTaskDetailOut(_TrainTaskOut):  # type: ignore
     creator: CreatorOut | None = None
     ai_model_type: str
     show_data_sets: list[dict]
+    base_task_id: str | None = None
 
     @field_validator(
         "status",
