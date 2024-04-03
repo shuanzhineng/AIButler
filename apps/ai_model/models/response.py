@@ -11,6 +11,7 @@ _TrainTaskGroupOut = pydantic_model_creator(
 )
 
 _TrainTaskOut = pydantic_model_creator(TrainTask, name="_TrainTaskOut", model_config=custom_base_model_config)
+BaseTaskOut = pydantic_model_creator(TrainTask, include=("id", "version"), name="BaseTaskOut")
 
 
 class TrainTaskGroupOut(_TrainTaskGroupOut):  # type: ignore
@@ -51,7 +52,7 @@ class TrainTaskDetailOut(_TrainTaskOut):  # type: ignore
     creator: CreatorOut | None = None
     ai_model_type: str
     show_data_sets: list[dict]
-    base_task: dict | None = None
+    base_task: BaseTaskOut | None = None  # type: ignore
 
     @field_validator(
         "status",
