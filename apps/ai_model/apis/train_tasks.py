@@ -135,7 +135,7 @@ async def create_train_task(
     items.pop("ai_model_type")
     base_task = await TrainTask.filter(id=base_task_id).first()
     data_sets = await DataSet.filter(id__in=data_set_ids)
-    last_task = await TrainTask.all().order_by("-version").first()
+    last_task = await TrainTask.filter(train_task_group=group).order_by("-version").first()
     if last_task:
         version = last_task.version + 1
     else:
