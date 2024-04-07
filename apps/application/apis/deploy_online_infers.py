@@ -11,6 +11,7 @@ from apps.application.models import request, response
 from celery_app.tasks import deploy_onnx_infer_by_train_task
 import uuid
 from common.minio_client import minio_client
+from common.enums import AnnotationTypeEnum
 from common.utils import get_instance
 
 router = APIRouter(
@@ -53,7 +54,13 @@ async def get_online_infers(query_sets=Depends(data_range_permission(DeployOnlin
     for item in output.items:
         train_task = await TrainTask.get(id=item.train_task_id)
         train_task_group = await train_task.train_task_group
-        item.train_task_out = {"id": train_task.id, "ai_model_type": train_task_group.ai_model_type}
+        item.train_task_out = {
+            "id": train_task.id,
+            "ai_model_type": {
+                "value": train_task_group.ai_model_type,
+                "name": AnnotationTypeEnum.get_display(train_task_group.ai_model_type),
+            },
+        }
     return output
 
 
@@ -64,7 +71,13 @@ async def retrieve_online_infer(pk: int, query_sets=Depends(data_range_permissio
     await instance.fetch_related("creator")
     train_task = await TrainTask.get(id=instance.train_task_id)
     train_task_group = await train_task.train_task_group
-    instance.train_task_out = {"id": train_task.id, "ai_model_type": train_task_group.ai_model_type}
+    instance.train_task_out = {
+        "id": train_task.id,
+        "ai_model_type": {
+            "value": train_task_group.ai_model_type,
+            "name": AnnotationTypeEnum.get_display(train_task_group.ai_model_type),
+        },
+    }
     return instance
 
 

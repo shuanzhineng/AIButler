@@ -13,7 +13,7 @@ _DeployOnlineInferOut = pydantic_model_creator(
 
 class TrainTaskOut(CustomBaseModel):
     id: int
-    ai_model_type: str
+    ai_model_type: dict
 
 
 class DeployOnlineInferOut(_DeployOnlineInferOut):  # type: ignore
