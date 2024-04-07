@@ -42,7 +42,13 @@ async def create_online_infers(user: NeedAuthorization, items: request.CreateDep
 
     await instance.fetch_related("creator")
     train_task_group = await train_task.train_task_group
-    instance.train_task_out = {"id": train_task.id, "ai_model_type": train_task_group.ai_model_type}
+    instance.train_task_out = {
+        "id": train_task.id,
+        "ai_model_type": {
+            "value": train_task_group.ai_model_type,
+            "name": AnnotationTypeEnum.get_display(train_task_group.ai_model_type),
+        },
+    }
     return instance
 
 
