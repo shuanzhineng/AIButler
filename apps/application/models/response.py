@@ -3,6 +3,7 @@ from apps.application.models.db import DeployOnlineInfer
 from pydantic import field_validator
 from tortoise.contrib.pydantic.creator import pydantic_model_creator
 from common.enums import DeployOnlineInferStatusEnum
+from common.base_pydantic import CustomBaseModel
 
 # ---------------------标注任务model------------------------
 _DeployOnlineInferOut = pydantic_model_creator(
@@ -10,8 +11,15 @@ _DeployOnlineInferOut = pydantic_model_creator(
 )
 
 
+class TrainTaskOut(CustomBaseModel):
+    id: int
+    ai_model_type: str
+
+
 class DeployOnlineInferOut(_DeployOnlineInferOut):  # type: ignore
     creator: CreatorOut | None = None
+    train_task_id: int | None = None
+    train_task_out: TrainTaskOut
 
     @field_validator(
         "status",
