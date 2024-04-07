@@ -62,6 +62,9 @@ async def retrieve_online_infer(pk: int, query_sets=Depends(data_range_permissio
     """外部通过api修改训练任务状态"""
     instance = await get_instance(query_sets, pk)
     await instance.fetch_related("creator")
+    train_task = await TrainTask.get(id=instance.train_task_id)
+    train_task_group = await train_task.train_task_group
+    instance.train_task_out = {"id": train_task.id, "ai_model_type": train_task_group.ai_model_type}
     return instance
 
 

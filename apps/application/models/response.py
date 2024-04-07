@@ -19,7 +19,7 @@ class TrainTaskOut(CustomBaseModel):
 class DeployOnlineInferOut(_DeployOnlineInferOut):  # type: ignore
     creator: CreatorOut | None = None
     train_task_id: int | None = None
-    train_task_out: TrainTaskOut
+    train_task_out: TrainTaskOut | None = None
 
     @field_validator(
         "status",
