@@ -50,7 +50,7 @@ async def get_online_infers(query_sets=Depends(data_range_permission(DeployOnlin
     """外部通过api修改训练任务状态"""
     query_sets = query_sets.select_related("creator")
     output = await paginate(query_sets, params=params)
-    for item in output["items"]:
+    for item in output.items:
         train_task = await TrainTask.get(id=item.train_task_id)
         train_task_group = await train_task.train_task_group
         item.train_task_out = {"id": train_task.id, "ai_model_type": train_task_group.ai_model_type}
