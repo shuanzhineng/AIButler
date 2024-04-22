@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from loguru import logger
 from tortoise import Tortoise, connections
 from common.logger import init_logging
-from conf.settings import settings
+from conf.settings import settings, AERICH_TORTOISE_ORM_CONFIG
 
 from common.db_signal import registration_db_signal
 
@@ -20,12 +20,7 @@ async def lifespan(app):
     logger.info("项启动信号接收成功!")
     if settings.DB_URL:
         # 初始化tortoise-orm
-        await Tortoise.init(
-            db_url=settings.DB_URL,
-            modules={
-                "models": ["aerich.models"] + settings.TORTOISE_ORM_MODELS,
-            },
-        )
+        await Tortoise.init(config=AERICH_TORTOISE_ORM_CONFIG)
         registration_db_signal()
     yield
     # shutdown
