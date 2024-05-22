@@ -14,7 +14,7 @@ exclude = [".mypy_cache", ".*", "logs", "static", "migrations"]
 
 
 [tool.poetry]
-name = "photocollector"
+name = "AIButler"
 version = "0.1.0"
 description = ""
 authors = ["王凡 <wangfan@keanbang.com>"]

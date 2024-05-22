@@ -86,29 +86,32 @@ pydantic_model_creator是在注册路由时(main.register_router)通过各种路
 └── static                             # 静态文件目录
     └── .gitkeep
 ```
-## 修改配置文件
+
+## 本地运行
+
+运行前需先安装以下中间件:
+
+Mysql/Sqlite、Redis、Minio
+
+创建数据库
+```sql
+CREATE DATABASE ai_butler CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+### 修改配置文件
 
 - 修改`environment.py`文件, 将文件中的`ENV_FLAG`修改为实际部署的环境标识如: `local`, `dev`, `prod`
 - 执行`cp .envs/.{环境标识}.example .envs/.{环境标识}`命令创建环境变量配置文件
 
-## 安装依赖环境
-
-### 使用poetry管理(推荐)
+### 安装Python依赖
 ```shell
 pip install poetry
 poetry config virtualenvs.create true  # 首次使用poetry时执行
 poetry install
 poetry shell  # 进入虚拟环境
 ```
-- 添加新的依赖包: `poetry add xxxx`(类似pip install xxx)
-- 导出requirements.txt: `poetry export --without-hashes -o requirements.txt`
 
-### 使用pip管理
-```shell
-pip install -r requirements.txt
-```
-
-## 数据迁移
+### 数据迁移
 ```shell
 # 此命令将直接在配置好的数据库中执行migrtions中的sql
 aerich upgrade
@@ -125,26 +128,4 @@ gunicorn main:app
 ### uvicorn运行
 ```shell
 python main.py
-```
-
-## 代码提交规范及pre-commit的使用
-
-`pre-commit` 是一个用于帮助开发团队保持代码质量和一致性的工具。它通过在代码提交前运行一系列配置好的钩子（或称为预提交挂钩）来实现这一目标。每个钩子都是一个命令或脚本，可以执行各种代码检查、格式化和验证操作。
-`.pre-commit-config.yaml`为本项目的`pre-commit`配置文件, 其中集成了`black`, `isort`, `flake8`, `mypy`等代码检查分析工具
-
-### 安装pre-commit
-```shell
-pip install pre-commit
-pre-commit install
-mypy --install-types
-```
-
-### 使用pre-commit
-
-当执行完`pre-commit install`命令以后执行`git commit`提交代码时将会对本次提交的代码进行自动检查, 请根据检查结果提示来优化代码以后再进行提交,如果你需要暂时关闭该检查可执行`pre-commit uninstall`关闭pre-commit
-
-
-```shell
-# 检查当前目录下所有文件
-pre-commit run -a
 ```

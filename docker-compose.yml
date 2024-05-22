@@ -1,10 +1,8 @@
 version: '3'
 
-volumes:
-    local_mysql_data:
-
 services:
-    ai_butler:
+
+  ai_butler:
         build:
             context: ""
             dockerfile: Dockerfile
